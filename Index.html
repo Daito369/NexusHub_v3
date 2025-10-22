@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NexusHub - 統合ワークスペースポータル</title>
-  <link rel="icon" type="image/png" href="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%234285F4%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%2334A853%22/%3E%0A%20%20%20%20%20%20%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23FBBC04%22/%3E%0A%20%20%20%20%3C/linearGradient%3E%0A%20%20%3C/defs%3E%0A%20%20%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23202124%22/%3E%0A%20%20%3Cpath%20fill%3D%22url%28%23g%29%22%20d%3D%22M14%2016h10l16%2026V16h10v32h-10L24%2022v26H14z%22/%3E%0A%3C/svg%3E">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -1561,13 +1561,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid rgba(232, 234, 246, 0.1);
+      margin-bottom: 0;
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
     }
 
     .modal-header h3 {
-      color: #e8eaf6;
+      color: var(--md-sys-color-on-surface);
       font-size: 20px;
       font-weight: 700;
     }
@@ -1575,21 +1575,22 @@
     .close-btn {
       background: none;
       border: none;
-      font-size: 28px;
-      color: #9fa8da;
+      font-size: 24px;
+      color: var(--md-sys-color-on-surface-variant);
       cursor: pointer;
-      padding: 0;
-      width: 30px;
-      height: 30px;
-      display: flex;
+      padding: 4px;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
+      transition: background 0.2s ease, color 0.2s ease;
     }
 
     .close-btn:hover {
-      background: rgba(102, 126, 234, 0.2);
-      color: #e8eaf6;
+      background: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
     }
 
     .form-group {
@@ -1973,23 +1974,21 @@
     }
 
     .brand-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: conic-gradient(#4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 270deg, #EA4335 270deg 360deg);
-      position: relative;
+      width: 44px;
+      height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+      border-radius: 12px;
+      background: var(--md-sys-color-surface-container-highest);
+      box-shadow: 0 6px 18px rgba(17, 17, 26, 0.12);
+      padding: 4px;
     }
 
-    .brand-logo::after {
-      content: 'G';
-      font-weight: 800;
-      font-size: 22px;
-      color: #202124;
-      font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
+    .brand-logo svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
 
     .nav-buttons {
@@ -2017,6 +2016,7 @@
       box-shadow: 0 8px 24px rgba(17, 17, 26, 0.08);
       transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
       --nav-accent: var(--md-sys-color-primary);
+      min-height: 52px;
     }
 
     .nav-btn::before {
@@ -2030,9 +2030,18 @@
       background: var(--nav-accent);
     }
 
-    .nav-btn .material-icons {
-      font-size: 20px;
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .nav-btn .material-icons,
+    .nav-btn .material-symbols-rounded {
+      font-size: 24px;
       color: var(--nav-accent);
+      line-height: 1;
     }
 
     .nav-btn:hover {
@@ -2073,15 +2082,8 @@
 
     .nav-btn.timer {
       --nav-accent: var(--md-sys-color-primary);
-      background: var(--md-sys-color-surface-container-highest);
-      border-style: dashed;
-      border-color: var(--md-sys-color-outline);
+      background: var(--md-sys-color-surface);
       color: var(--md-sys-color-on-surface);
-      box-shadow: none;
-    }
-
-    .nav-btn.timer:hover {
-      box-shadow: 0 12px 28px rgba(17, 17, 26, 0.18);
     }
 
     .badge {
@@ -2674,6 +2676,90 @@
       background: var(--md-sys-color-surface);
     }
 
+    .modal-header-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-modal-content {
+      max-width: min(640px, 90vw);
+      padding: 0;
+      overflow: hidden;
+      border-radius: 28px;
+    }
+
+    .timer-modal-header {
+      padding: 24px 24px 16px;
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .timer-modal-header h3 {
+      margin: 0;
+    }
+
+    .timer-modal-body {
+      position: relative;
+      min-height: 520px;
+      background: var(--md-sys-color-surface);
+      border-radius: 0 0 28px 28px;
+    }
+
+    #timerIframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      border-radius: 0 0 28px 28px;
+      background: var(--md-sys-color-surface);
+    }
+
+    #timerLoadingIndicator {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 1;
+      background: rgba(0, 0, 0, 0.04);
+      background: color-mix(in srgb, var(--md-sys-color-surface) 85%, transparent);
+      border-radius: 0 0 28px 28px;
+    }
+
+    #timerLoadingIndicator[hidden] {
+      display: none;
+    }
+
+    #timerLoadingIndicator .spinner {
+      border-top-color: var(--md-sys-color-primary);
+    }
+
+    .modal-header-actions .material-symbols-rounded {
+      font-size: 20px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .popout-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .popout-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(17, 17, 26, 0.12);
+    }
+
     footer {
       background: var(--md-sys-color-surface-container);
       border-top: 1px solid var(--md-sys-color-outline-variant);
@@ -2730,7 +2816,14 @@
     <header>
       <div class="header-left">
         <h1 class="brand">
-          <span class="brand-logo" aria-hidden="true"></span>
+          <span class="brand-logo" aria-hidden="true">
+            <svg viewBox="0 0 256 262" role="presentation" focusable="false">
+              <path fill="#4285F4" d="M255.86 133.5c0-8.9-.78-17.6-2.25-26H130v49.2h70.5c-3 16-12.1 29.5-25.9 38.6v32.2h41.9c24.5-22.5 38.4-55.9 38.4-94z"/>
+              <path fill="#34A853" d="M130 260c35 0 64.4-11.6 85.9-31.5l-41.9-32.2c-11.7 7.9-26.6 12.5-44 12.5-33.8 0-62.5-22.8-72.8-53.6H13.4v33.6C34.7 230 78.2 260 130 260z"/>
+              <path fill="#FBBC05" d="M57.2 155.2c-2.6-7.9-4-16.3-4-25.2s1.4-17.3 4-25.2V71.2H13.4C5.5 86.6 1 104.3 1 122.8s4.5 36.2 12.4 51.6l43.8-33.2z"/>
+              <path fill="#EA4335" d="M130 51.6c18.9 0 35.8 6.5 49.1 19.4l36.7-36.7C194.3 12.6 165 1 130 1 78.2 1 34.7 31 13.4 71.2l43.8 33.6c10.3-30.8 39-53.6 72.8-53.6z"/>
+            </svg>
+          </span>
           <span class="brand-text">
             <span class="brand-name">NexusHub</span>
             <span class="brand-tagline">Unified workspace intelligence</span>
@@ -2738,7 +2831,7 @@
         </h1>
         <div class="nav-buttons">
           <a href="https://gemini.google.com" target="_blank" class="nav-btn gemini">
-            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/gemini_color_48dp.png" alt="Gemini" loading="lazy">
+            <img class="nav-icon" src="https://www.gstatic.com/gemini/static/images/icons/gemini_color_96dp.svg" alt="Gemini" loading="lazy">
             Gemini
           </a>
           <a href="https://mail.google.com" target="_blank" class="nav-btn gmail" id="gmailBtn" aria-label="Gmail">
@@ -2975,6 +3068,28 @@
     <footer>
       <p>&copy; 2025 NexusHub - 統合ワークスペースポータル | Powered by T/G Policy</p>
     </footer>
+  </div>
+
+  <div id="timerModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="timerModalTitle">
+    <div class="modal-content timer-modal-content">
+      <div class="modal-header timer-modal-header">
+        <h3 id="timerModalTitle">フォーカスタイマー</h3>
+        <div class="modal-header-actions">
+          <button type="button" class="popout-btn" id="timerPopoutButton">
+            <span class="material-symbols-rounded" aria-hidden="true">open_in_new</span>
+            別ウィンドウ
+          </button>
+          <button class="close-btn" type="button" onclick="closeModal('timerModal')" aria-label="閉じる">&times;</button>
+        </div>
+      </div>
+      <div class="timer-modal-body">
+        <div class="loading-spinner" id="timerLoadingIndicator">
+          <div class="spinner"></div>
+          <p>タイマーを準備中...</p>
+        </div>
+        <iframe id="timerIframe" title="NexusHub タイマー" loading="lazy" allow="autoplay" referrerpolicy="no-referrer"></iframe>
+      </div>
+    </div>
   </div>
 
   <!-- イベントモーダル -->
@@ -3226,12 +3341,38 @@
     let collapsedFolders = {};
     let todayEventsData = [];
     let nextEventData = null;
+    let timerPopupRef = null;
+
+    const timerModalElement = document.getElementById('timerModal');
+    const timerIframeElement = document.getElementById('timerIframe');
+    const timerLoadingIndicator = document.getElementById('timerLoadingIndicator');
+    const timerPopoutButton = document.getElementById('timerPopoutButton');
 
     const THEME_STORAGE_KEY = 'nexushub-theme';
     const themeToggleButton = document.getElementById('themeToggle');
     const themeToggleIcon = document.getElementById('themeToggleIcon');
     const themeToggleLabel = document.getElementById('themeToggleLabel');
     const prefersDarkMediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+    function broadcastThemeToTimerSurfaces(theme) {
+      if (!theme) return;
+
+      if (timerIframeElement && timerIframeElement.contentWindow) {
+        try {
+          timerIframeElement.contentWindow.postMessage({ type: 'nexushub-theme', theme: theme }, '*');
+        } catch (error) {
+          console.warn('タイマーモーダルへのテーマ連携に失敗しました:', error);
+        }
+      }
+
+      if (timerPopupRef && !timerPopupRef.closed) {
+        try {
+          timerPopupRef.postMessage({ type: 'nexushub-theme', theme: theme }, '*');
+        } catch (error) {
+          console.warn('タイマーポップアップへのテーマ連携に失敗しました:', error);
+        }
+      }
+    }
 
     function syncThemeToggle(theme) {
       if (!themeToggleButton) return;
@@ -3250,6 +3391,7 @@
       const normalized = theme === 'dark' ? 'dark' : 'light';
       root.setAttribute('data-theme', normalized);
       syncThemeToggle(normalized);
+      broadcastThemeToTimerSurfaces(normalized);
       if (options && options.persist) {
         try {
           localStorage.setItem(THEME_STORAGE_KEY, normalized);
@@ -3321,6 +3463,51 @@
 
     initializeTheme();
 
+    if (timerIframeElement) {
+      timerIframeElement.addEventListener('load', function() {
+        if (timerLoadingIndicator) {
+          timerLoadingIndicator.setAttribute('hidden', 'true');
+        }
+      });
+    }
+
+    if (timerPopoutButton) {
+      timerPopoutButton.addEventListener('click', function() {
+        const popup = openTimerPopup(buildTimerUrl());
+        if (!popup) {
+          alert('ポップアップがブロックされています。ブラウザの設定を確認してください。');
+        }
+      });
+    }
+
+    window.addEventListener('message', function(event) {
+      if (!event || typeof event.data !== 'object' || event.data === null) {
+        return;
+      }
+
+      const data = event.data;
+      if (data.type === 'nexushub-timer-ready') {
+        const theme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        try {
+          if (event.source && typeof event.source.postMessage === 'function') {
+            event.source.postMessage({ type: 'nexushub-theme', theme: theme }, '*');
+          }
+        } catch (error) {
+          console.warn('タイマーへのテーマ同期応答に失敗しました:', error);
+        }
+
+        if (timerLoadingIndicator) {
+          timerLoadingIndicator.setAttribute('hidden', 'true');
+        }
+      }
+    });
+
+    setInterval(function() {
+      if (timerPopupRef && timerPopupRef.closed) {
+        timerPopupRef = null;
+      }
+    }, 5000);
+
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
@@ -3347,16 +3534,53 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    function openTimerWindow() {
+    function buildTimerUrl() {
       const timerUrl = new URL(window.location.href);
       timerUrl.searchParams.set('page', 'timer');
       timerUrl.hash = '';
+      return timerUrl.toString();
+    }
+
+    function openTimerPopup(url) {
       const features = 'width=420,height=560,resizable=yes,scrollbars=yes';
-      const timerWindow = window.open(timerUrl.toString(), 'nexushub-timer', features);
-      if (timerWindow && typeof timerWindow.focus === 'function') {
-        timerWindow.focus();
-      } else {
-        alert('ポップアップがブロックされました。タイマーを開くには許可してください。');
+      const popup = window.open(url, 'nexushub-timer', features);
+      if (popup && typeof popup.focus === 'function') {
+        popup.focus();
+        timerPopupRef = popup;
+        broadcastThemeToTimerSurfaces(document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+        return popup;
+      }
+      return null;
+    }
+
+    function openTimerModal(url) {
+      if (timerLoadingIndicator) {
+        timerLoadingIndicator.removeAttribute('hidden');
+      }
+
+      if (timerIframeElement) {
+        if (timerIframeElement.getAttribute('src') !== url) {
+          timerIframeElement.setAttribute('src', url);
+        } else if (timerIframeElement.contentWindow) {
+          if (timerLoadingIndicator) {
+            timerLoadingIndicator.setAttribute('hidden', 'true');
+          }
+          const theme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          timerIframeElement.contentWindow.postMessage({ type: 'nexushub-theme', theme: theme }, '*');
+        }
+      }
+
+      if (timerModalElement) {
+        timerModalElement.style.display = 'block';
+      }
+    }
+
+    function openTimerWindow() {
+      const timerUrl = buildTimerUrl();
+      openTimerModal(timerUrl);
+      const popup = openTimerPopup(timerUrl);
+      if (!popup) {
+        console.info('タイマーをポップアップで開けませんでした。モーダル表示を継続します。');
       }
     }
 
