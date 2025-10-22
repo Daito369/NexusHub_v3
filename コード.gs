@@ -1,9 +1,12 @@
+const FAVICON_DATA_URL = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%234285F4%22/%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%2334A853%22/%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23FBBC04%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23202124%22/%3E%3Cpath%20fill%3D%22url%28%23g%29%22%20d%3D%22M14%2016h10l16%2026V16h10v32h-10L24%2022v26H14z%22/%3E%3C/svg%3E';
+
 function doGet(e) {
   const page = e && e.parameter && e.parameter.page ? e.parameter.page : '';
   const templateName = page === 'timer' ? 'Timer' : 'Index';
 
   return HtmlService.createHtmlOutputFromFile(templateName)
-    .setTitle('NexusHub - 統合ワークスペースポータル');
+    .setTitle('NexusHub - 統合ワークスペースポータル')
+    .setFaviconUrl(FAVICON_DATA_URL);
 }
 
 function getUserInfo() {
