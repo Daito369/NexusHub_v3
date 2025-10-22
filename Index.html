@@ -1,0 +1,5679 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusHub - 統合ワークスペースポータル</title>
+  <link rel="icon" type="image/png" href="https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      padding: 15px;
+      padding-bottom: 60px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, rgba(15, 32, 39, 0.95) 0%, rgba(32, 58, 67, 0.95) 100%);
+      border-radius: 16px;
+      padding: 15px 25px;
+      margin-bottom: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    h1 {
+      color: #e8eaf6;
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo {
+      font-size: 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 15px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .nav-btn.gemini { background: linear-gradient(135deg, #8E54E9 0%, #4776E6 100%); }
+    .nav-btn.gmail { background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%); }
+    .nav-btn.chat { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .nav-btn.calendar { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .nav-btn.drive { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+
+    .nav-btn .material-icons {
+      font-size: 18px;
+    }
+
+    .badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #E74C3C;
+      color: white;
+      border-radius: 10px;
+      padding: 2px 6px;
+      font-size: 10px;
+      font-weight: 700;
+      min-width: 18px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.6);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .user-email {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e8eaf6;
+    }
+
+    .clock-section {
+      text-align: right;
+      border-left: 2px solid rgba(232, 234, 246, 0.2);
+      padding-left: 15px;
+    }
+
+    .clock {
+      font-size: 20px;
+      font-weight: 700;
+      color: #667eea;
+      white-space: nowrap;
+    }
+
+    .date {
+      font-size: 11px;
+      color: #9fa8da;
+      white-space: nowrap;
+    }
+
+    .summary-dashboard {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+      border-radius: 16px;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      border: 1px solid rgba(102, 126, 234, 0.2);
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+    }
+
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.3s ease;
+    }
+
+    .summary-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+      background: rgba(15, 32, 39, 0.8);
+    }
+
+    .summary-item.clickable {
+      cursor: pointer;
+    }
+
+    .summary-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .summary-icon.email {
+      background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);
+      box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+
+    .summary-icon.event {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+
+    .summary-icon.next {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      box-shadow: 0 4px 15px rgba(250, 112, 154, 0.3);
+    }
+
+    .summary-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: #9fa8da;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+      font-size: 18px;
+      color: #e8eaf6;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-subtext {
+      font-size: 10px;
+      color: #7986cb;
+      margin-top: 2px;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 450px 1fr 280px;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: linear-gradient(135deg, rgba(15, 32, 39, 0.95) 0%, rgba(32, 58, 67, 0.95) 100%);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      height: 600px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-card h2 {
+      color: #e8eaf6;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .calendar-widget {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .calendar-header button {
+      background: none;
+      border: none;
+      color: #667eea;
+      cursor: pointer;
+      font-size: 20px;
+      padding: 5px;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .calendar-header button:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .today-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      color: white !important;
+      border-radius: 8px !important;
+      padding: 5px 12px !important;
+      font-size: 12px !important;
+      font-weight: 600;
+      width: auto !important;
+    }
+
+    .today-btn:hover {
+      background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+    }
+
+    .add-event-quick-btn {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+      color: white !important;
+      border-radius: 8px !important;
+      padding: 5px 10px !important;
+      font-size: 18px !important;
+      width: 30px !important;
+      height: 30px !important;
+      box-shadow: 0 2px 10px rgba(67, 233, 123, 0.3);
+    }
+
+    .add-event-quick-btn:hover {
+      box-shadow: 0 4px 15px rgba(67, 233, 123, 0.5);
+    }
+
+    .calendar-month {
+      font-size: 14px;
+      font-weight: 700;
+      color: #e8eaf6;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      flex: 1;
+      align-content: start;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-size: 9px;
+      font-weight: 600;
+      color: #9fa8da;
+      padding: 3px 0;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      color: #c5cae9;
+    }
+
+    .calendar-day:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .calendar-day.other-month {
+      color: #5c6bc0;
+    }
+
+    .calendar-day.today {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .calendar-day.has-events::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      width: 3px;
+      height: 3px;
+      background: #E74C3C;
+      border-radius: 50%;
+    }
+
+    .calendar-day.today.has-events::after {
+      background: white;
+    }
+
+    .todo-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .todo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .add-todo-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .add-todo-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-todo-btn .material-icons {
+      font-size: 14px;
+    }
+
+    #todoList {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+
+    #todoList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #todoList::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    #todoList::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .todo-list {
+      list-style: none;
+    }
+
+    .todo-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .todo-list::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    .todo-list::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .todo-item {
+      padding: 6px;
+      border-bottom: 1px solid rgba(232, 234, 246, 0.1);
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+
+    .todo-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .todo-item:last-child {
+      border-bottom: none;
+    }
+
+    .todo-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .todo-content {
+      flex: 1;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .todo-title {
+      font-weight: 600;
+      color: #e8eaf6;
+      font-size: 11px;
+      margin-bottom: 3px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .todo-meta {
+      font-size: 9px;
+      color: #9fa8da;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .todo-due {
+      color: #F093FB;
+      font-weight: 600;
+    }
+
+    .todo-actions {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .todo-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 3px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .todo-action-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .todo-action-btn.complete {
+      color: #43e97b;
+    }
+
+    .todo-action-btn.delete {
+      color: #F5576C;
+    }
+
+    .todo-action-btn .material-icons {
+      font-size: 14px;
+    }
+
+    .subtasks {
+      margin-left: 14px;
+      margin-top: 5px;
+    }
+
+    .subtask-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 0;
+      font-size: 10px;
+      color: #9fa8da;
+    }
+
+    .subtask-item .material-icons {
+      font-size: 12px;
+      color: #7986cb;
+    }
+
+    #emailList {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+
+    #emailList::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #emailList::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    #emailList::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .email-list {
+      list-style: none;
+    }
+
+    .email-item {
+      padding: 12px;
+      border-bottom: 1px solid rgba(232, 234, 246, 0.1);
+      transition: background 0.3s ease;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .email-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    .email-item:last-child {
+      border-bottom: none;
+    }
+
+    .email-item.unread {
+      background: rgba(240, 147, 251, 0.15);
+      font-weight: 600;
+      border-left: 4px solid #F093FB;
+    }
+
+    .email-item.unread:hover {
+      background: rgba(240, 147, 251, 0.25);
+    }
+
+    .email-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .email-from {
+      font-weight: 700;
+      color: #e8eaf6;
+      font-size: 13px;
+    }
+
+    .email-date {
+      font-size: 11px;
+      color: #9fa8da;
+    }
+
+    .email-subject {
+      color: #667eea;
+      font-size: 13px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+
+    .email-snippet {
+      font-size: 11px;
+      color: #9fa8da;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .no-unread-message {
+      text-align: center;
+      color: #43e97b;
+      padding: 30px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .no-unread-message .material-icons {
+      font-size: 48px;
+      color: #43e97b;
+    }
+
+    .email-thread {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .email-thread::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .email-thread::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 4px;
+    }
+
+    .email-thread::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 4px;
+    }
+
+    .gmail-reply-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .gmail-reply-text {
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gmail-reply-text .material-icons {
+      font-size: 20px;
+    }
+
+    .gmail-reply-btn {
+      background: white;
+      color: #667eea;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .gmail-reply-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .gmail-reply-btn .material-icons {
+      font-size: 18px;
+    }
+
+    .email-message {
+      padding: 24px;
+      border-left: 4px solid #667eea;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .email-message:last-child {
+      margin-bottom: 0;
+    }
+
+    .email-message-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .email-message-from {
+      font-weight: 700;
+      color: #e8eaf6;
+      font-size: 17px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .email-message-from::before {
+      content: '👤';
+      font-size: 20px;
+    }
+
+    .email-message-meta {
+      font-size: 14px;
+      color: #9fa8da;
+      line-height: 1.8;
+    }
+
+    .email-message-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+      padding: 4px 0;
+    }
+
+    .email-message-meta-row .material-icons {
+      font-size: 18px;
+      color: #667eea;
+    }
+
+    .email-message-meta-label {
+      font-weight: 600;
+      color: #c5cae9;
+      min-width: 50px;
+    }
+
+    .email-message-body {
+      white-space: pre-wrap;
+      font-size: 14px;
+      color: #e8eaf6;
+      line-height: 1.8;
+      background: rgba(15, 32, 39, 0.5);
+      padding: 20px;
+      border-radius: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+      word-wrap: break-word;
+    }
+
+    .email-message-body a {
+      color: #667eea;
+      text-decoration: underline;
+      word-break: break-all;
+    }
+
+    .email-message-body a:hover {
+      color: #8E54E9;
+    }
+
+    .email-message-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .email-message-body::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    .email-message-body::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .email-attachments {
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 2px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .email-attachments-title {
+      font-weight: 600;
+      color: #e8eaf6;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .email-attachments-title .material-icons {
+      font-size: 18px;
+      color: #667eea;
+    }
+
+    .attachment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(15, 32, 39, 0.5);
+      border-radius: 8px;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .attachment-item:hover {
+      background: rgba(102, 126, 234, 0.2);
+      border-color: #667eea;
+    }
+
+    .attachment-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .attachment-icon {
+      color: #667eea;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+
+    .attachment-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .attachment-name {
+      font-weight: 600;
+      color: #e8eaf6;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .attachment-size {
+      font-size: 11px;
+      color: #9fa8da;
+      margin-top: 2px;
+    }
+
+    .attachment-download-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .attachment-download-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .attachment-download-btn .material-icons {
+      font-size: 16px;
+    }
+
+    .email-count-badge {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: auto;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .links-section {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .links-section::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .links-section::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    .links-section::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .links-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-shrink: 0;
+    }
+
+    .links-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #e8eaf6;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .links-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .add-link-btn, .add-folder-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+    }
+
+    .add-folder-btn {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .add-link-btn:hover, .add-folder-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-link-btn .material-icons, .add-folder-btn .material-icons {
+      font-size: 16px;
+    }
+
+    .folder-container {
+      margin-bottom: 8px;
+    }
+
+    .folder-container.nested {
+      margin-left: 20px;
+      border-left: 2px solid rgba(232, 234, 246, 0.1);
+      padding-left: 10px;
+    }
+
+    .folder-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .folder-header:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .folder-header.collapsed {
+      margin-bottom: 0;
+    }
+
+    .folder-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .folder-icon {
+      font-size: 20px;
+      transition: transform 0.2s ease;
+    }
+
+    .folder-header.collapsed .folder-icon {
+      transform: rotate(-90deg);
+    }
+
+    .folder-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: #e8eaf6;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .folder-count {
+      font-size: 11px;
+      color: #9fa8da;
+      margin-left: 4px;
+    }
+
+    .folder-actions {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .folder-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .folder-action-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .folder-action-btn.edit {
+      color: #667eea;
+    }
+
+    .folder-action-btn.delete {
+      color: #F5576C;
+    }
+
+    .folder-action-btn .material-icons {
+      font-size: 16px;
+    }
+
+    .folder-links {
+      padding-left: 20px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      border-left: 2px solid rgba(232, 234, 246, 0.1);
+      margin-left: 10px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    .folder-links.collapsed {
+      display: none;
+    }
+
+    .custom-links-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 2px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .custom-link-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      gap: 8px;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .custom-link-item:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .custom-link-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .custom-link-content a {
+      text-decoration: none;
+      color: #667eea;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .custom-link-content a:hover {
+      color: #8E54E9;
+    }
+
+    .link-favicon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      border-radius: 3px;
+      object-fit: contain;
+    }
+
+    .custom-link-content .material-icons {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .custom-link-content .material-icons.icon-only {
+      display: inline-flex;
+    }
+
+    .custom-link-content .material-icons.icon-hidden {
+      display: none;
+    }
+
+    .custom-link-actions {
+      display: flex;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .link-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s ease;
+    }
+
+    .link-action-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .link-action-btn.edit {
+      color: #667eea;
+    }
+
+    .link-action-btn.delete {
+      color: #F5576C;
+    }
+
+    .link-action-btn .material-icons {
+      font-size: 16px;
+    }
+
+    .no-links-message {
+      text-align: center;
+      color: #9fa8da;
+      padding: 20px;
+      font-size: 13px;
+      grid-column: 1 / -1;
+    }
+
+    .color-picker-group {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .color-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.selected {
+      border-color: #e8eaf6;
+      box-shadow: 0 0 0 2px rgba(15, 32, 39, 0.5), 0 0 0 4px #e8eaf6;
+    }
+
+    /* 並び替えモーダル用スタイル */
+    .reorder-modal .modal-content {
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .reorder-modal .modal-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .reorder-modal .modal-content::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 4px;
+    }
+
+    .reorder-modal .modal-content::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 4px;
+    }
+
+    .reorder-modal #reorderContent {
+      overflow-y: auto;
+      max-height: calc(85vh - 100px);
+      padding-right: 5px;
+    }
+
+    .reorder-modal #reorderContent::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .reorder-modal #reorderContent::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    .reorder-modal #reorderContent::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .reorder-section {
+      margin-bottom: 25px;
+    }
+
+    .reorder-section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e8eaf6;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .reorder-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    .reorder-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .reorder-list::-webkit-scrollbar-track {
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 3px;
+    }
+
+    .reorder-list::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 3px;
+    }
+
+    .reorder-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 15px;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .reorder-item:hover {
+      background: rgba(102, 126, 234, 0.15);
+      border-color: #667eea;
+    }
+
+    .reorder-item-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .reorder-item-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .reorder-item-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e8eaf6;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .reorder-item-badge {
+      font-size: 11px;
+      color: #9fa8da;
+      background: rgba(102, 126, 234, 0.2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+    }
+
+    .reorder-controls {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .reorder-btn {
+      background: rgba(102, 126, 234, 0.2);
+      border: 1px solid rgba(102, 126, 234, 0.3);
+      color: #667eea;
+      padding: 6px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      width: 32px;
+      height: 32px;
+    }
+
+    .reorder-btn:hover {
+      background: rgba(102, 126, 234, 0.4);
+      border-color: #667eea;
+      transform: translateY(-1px);
+    }
+
+    .reorder-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .reorder-btn .material-icons {
+      font-size: 18px;
+    }
+
+    .reorder-empty {
+      text-align: center;
+      color: #9fa8da;
+      padding: 30px;
+      font-size: 13px;
+    }
+
+    .folder-move-section {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 2px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .folder-move-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 8px;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+      margin-bottom: 8px;
+    }
+
+    .folder-move-select {
+      flex: 1;
+      margin: 0 10px;
+      background: rgba(15, 32, 39, 0.6);
+      color: #e8eaf6;
+      border: 2px solid rgba(232, 234, 246, 0.2);
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    .folder-move-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .folder-move-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, rgba(15, 32, 39, 0.98) 0%, rgba(32, 58, 67, 0.98) 100%);
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 16px;
+      max-width: 500px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideDown 0.3s ease;
+      border: 1px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .modal-content.large {
+      max-width: 800px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid rgba(232, 234, 246, 0.1);
+    }
+
+    .modal-header h3 {
+      color: #e8eaf6;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #9fa8da;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-btn:hover {
+      background: rgba(102, 126, 234, 0.2);
+      color: #e8eaf6;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #e8eaf6;
+      font-size: 14px;
+    }
+
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      border: 2px solid rgba(232, 234, 246, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 14px;
+      font-family: 'Noto Sans JP', sans-serif;
+      transition: border-color 0.3s ease;
+      background: rgba(15, 32, 39, 0.6);
+      color: #e8eaf6;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .form-checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .form-checkbox {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .form-checkbox-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e8eaf6;
+      cursor: pointer;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(15, 32, 39, 0.6);
+      color: #c5cae9;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #F5576C 0%, #F093FB 100%);
+    }
+
+    .event-item {
+      padding: 15px;
+      border-left: 4px solid #667eea;
+      background: rgba(15, 32, 39, 0.6);
+      border-radius: 8px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .event-item:hover {
+      background: rgba(102, 126, 234, 0.2);
+    }
+
+    .event-item.todo-event {
+      border-left-color: #fee140;
+      background: rgba(254, 225, 64, 0.15);
+    }
+
+    .event-item.todo-event:hover {
+      background: rgba(254, 225, 64, 0.25);
+    }
+
+    .event-time {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .event-title {
+      font-weight: 600;
+      color: #e8eaf6;
+      font-size: 15px;
+      margin-bottom: 5px;
+    }
+
+    .event-details {
+      font-size: 12px;
+      color: #9fa8da;
+      margin-top: 5px;
+    }
+
+    .no-events {
+      text-align: center;
+      color: #9fa8da;
+      padding: 30px;
+      font-size: 14px;
+    }
+
+    .add-event-from-modal-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      width: 100%;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .add-event-from-modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-event-from-modal-btn .material-icons {
+      font-size: 20px;
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 20px;
+      color: #9fa8da;
+    }
+
+    .spinner {
+      border: 3px solid rgba(102, 126, 234, 0.2);
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: rgba(232, 234, 246, 0.8);
+      padding: 15px;
+      font-size: 13px;
+      background: linear-gradient(135deg, rgba(15, 32, 39, 0.95) 0%, rgba(32, 58, 67, 0.95) 100%);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    @media (max-width: 1400px) {
+      .main-content {
+        grid-template-columns: 1fr 1fr 280px;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-dashboard {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+
+      .folder-links, .custom-links-list {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-right {
+        justify-content: space-between;
+      }
+
+      .clock-section {
+        border-left: none;
+        border-top: 2px solid rgba(232, 234, 246, 0.2);
+        padding-left: 0;
+        padding-top: 10px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    :root {
+      color-scheme: light;
+      --md-sys-color-primary: #6750A4;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-secondary: #625B71;
+      --md-sys-color-on-secondary: #FFFFFF;
+      --md-sys-color-tertiary: #7D5260;
+      --md-sys-color-on-tertiary: #FFFFFF;
+      --md-sys-color-surface: #FEF7FF;
+      --md-sys-color-surface-container-low: #F7F2FA;
+      --md-sys-color-surface-container: #F3EDF7;
+      --md-sys-color-surface-container-high: #ECE6F0;
+      --md-sys-color-surface-container-highest: #E6E0E9;
+      --md-sys-color-outline: #79747E;
+      --md-sys-color-outline-variant: #CAC4D0;
+      --md-sys-color-on-surface: #1D1B20;
+      --md-sys-color-on-surface-variant: #49454F;
+      --md-sys-color-shadow: rgba(29, 27, 32, 0.08);
+      --md-sys-color-error: #B3261E;
+      --md-sys-color-success: #2E7D32;
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
+      --md-sys-color-primary: #D0BCFF;
+      --md-sys-color-on-primary: #371E73;
+      --md-sys-color-secondary: #CCC2DC;
+      --md-sys-color-on-secondary: #332D41;
+      --md-sys-color-tertiary: #EFB8C8;
+      --md-sys-color-on-tertiary: #492532;
+      --md-sys-color-surface: #141218;
+      --md-sys-color-surface-container-low: #1D1B20;
+      --md-sys-color-surface-container: #211F26;
+      --md-sys-color-surface-container-high: #29282F;
+      --md-sys-color-surface-container-highest: #312F37;
+      --md-sys-color-outline: #938F99;
+      --md-sys-color-outline-variant: #49454F;
+      --md-sys-color-on-surface: #E6E0E9;
+      --md-sys-color-on-surface-variant: #CAC4D0;
+      --md-sys-color-shadow: rgba(0, 0, 0, 0.6);
+      --md-sys-color-error: #F2B8B5;
+      --md-sys-color-success: #81C995;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      padding: 28px;
+      padding-bottom: 88px;
+      transition: background 0.3s ease, color 0.3s ease;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      background: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 32px;
+      padding: 22px 32px;
+      box-shadow: 0 18px 48px var(--md-sys-color-shadow);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .brand-name {
+      font-size: 26px;
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-tagline {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: conic-gradient(#4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 270deg, #EA4335 270deg 360deg);
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .brand-logo::after {
+      content: 'G';
+      font-weight: 800;
+      font-size: 22px;
+      color: #202124;
+      font-family: 'Google Sans', 'Noto Sans JP', sans-serif;
+    }
+
+    .nav-buttons {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-on-surface);
+      border-radius: 18px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      padding: 12px 18px 12px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(17, 17, 26, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      --nav-accent: var(--md-sys-color-primary);
+    }
+
+    .nav-btn::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      border-radius: 999px;
+      background: var(--nav-accent);
+    }
+
+    .nav-btn .material-icons {
+      font-size: 20px;
+      color: var(--nav-accent);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--nav-accent);
+      box-shadow: 0 16px 32px rgba(17, 17, 26, 0.16);
+    }
+
+    .nav-btn:focus-visible {
+      outline: 3px solid rgba(103, 80, 164, 0.35);
+      outline-offset: 2px;
+    }
+
+    .nav-btn.gemini {
+      --nav-accent: var(--md-sys-color-tertiary);
+      background: var(--md-sys-color-surface);
+    }
+
+    .nav-btn.gmail {
+      --nav-accent: #D93025;
+      background: var(--md-sys-color-surface);
+    }
+
+    .nav-btn.chat {
+      --nav-accent: #188038;
+      background: var(--md-sys-color-surface);
+    }
+
+    .nav-btn.calendar {
+      --nav-accent: #1B6EF3;
+      background: var(--md-sys-color-surface);
+    }
+
+    .nav-btn.drive {
+      --nav-accent: #0B806A;
+      background: var(--md-sys-color-surface);
+    }
+
+    .nav-btn.timer {
+      --nav-accent: var(--md-sys-color-primary);
+      background: var(--md-sys-color-surface-container-highest);
+      border-style: dashed;
+      border-color: var(--md-sys-color-outline);
+      color: var(--md-sys-color-on-surface);
+      box-shadow: none;
+    }
+
+    .nav-btn.timer:hover {
+      box-shadow: 0 12px 28px rgba(17, 17, 26, 0.18);
+    }
+
+    .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      min-width: 22px;
+      padding: 2px 6px;
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: center;
+      background: var(--md-sys-color-error);
+      border-radius: 999px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(178, 34, 34, 0.25);
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-on-surface);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .mode-toggle .material-icons {
+      font-size: 20px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .mode-toggle:hover {
+      transform: translateY(-1px);
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 10px 24px rgba(17, 17, 26, 0.14);
+    }
+
+    .mode-toggle-label {
+      letter-spacing: 0.06em;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: flex-end;
+    }
+
+    .user-email {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .clock-section {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      border-left: none;
+      padding-left: 0;
+    }
+
+    .clock {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--md-sys-color-primary);
+      letter-spacing: 0.04em;
+    }
+
+    .date {
+      font-size: 12px;
+      color: var(--md-sys-color-on-surface-variant);
+      letter-spacing: 0.08em;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-dashboard {
+      background: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      box-shadow: 0 10px 30px var(--md-sys-color-shadow);
+      padding: 20px;
+      border-radius: 28px;
+      gap: 20px;
+    }
+
+    .summary-item {
+      background: var(--md-sys-color-surface);
+      border: 1px solid transparent;
+      border-radius: 20px;
+      padding: 18px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .summary-item:hover {
+      transform: translateY(-2px);
+      border-color: var(--md-sys-color-outline-variant);
+      box-shadow: 0 12px 28px var(--md-sys-color-shadow);
+    }
+
+    .summary-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: var(--md-sys-color-surface-container-high);
+      color: var(--md-sys-color-primary);
+      border-radius: 16px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    }
+
+    .summary-icon .material-symbols-rounded {
+      font-size: 24px;
+      font-variation-settings: 'FILL' 1;
+      color: inherit;
+    }
+
+    .summary-icon.event {
+      color: #386A20;
+    }
+
+    .summary-icon.next {
+      color: var(--md-sys-color-tertiary);
+    }
+
+    .summary-icon.chat {
+      color: var(--md-sys-color-secondary);
+    }
+
+    .summary-label {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    .summary-value {
+      color: var(--md-sys-color-on-surface);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .summary-unit {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .summary-subtext {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .no-unread-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      background: var(--md-sys-color-surface-container-low);
+      border-radius: 20px;
+      border: 1px dashed var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
+      padding: 32px 24px;
+      gap: 12px;
+    }
+
+    .no-unread-message .material-icons {
+      color: var(--md-sys-color-primary);
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .content-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .utility-column {
+      gap: 24px;
+    }
+
+    .info-card {
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 24px;
+      box-shadow: 0 18px 36px var(--md-sys-color-shadow);
+      padding: 24px;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+    }
+
+    .info-card:hover {
+      box-shadow: 0 24px 44px rgba(29, 27, 32, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .highlight-card {
+      box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.35), 0 24px 44px rgba(29, 27, 32, 0.12);
+    }
+
+    .info-card h2 {
+      color: var(--md-sys-color-on-surface);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .calendar-card {
+      min-height: 340px;
+    }
+
+    .todo-card {
+      min-height: 260px;
+    }
+
+    .links-actions button {
+      background: var(--md-sys-color-surface-container-high) !important;
+      color: var(--md-sys-color-on-surface) !important;
+      border-radius: 999px !important;
+      border: 1px solid var(--md-sys-color-outline-variant) !important;
+      box-shadow: none !important;
+      padding: 8px 14px !important;
+      font-weight: 600 !important;
+    }
+
+    .quick-actions-card .quick-actions-description {
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.6;
+      margin-top: -8px;
+    }
+
+    .quick-launch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-launch-btn {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-low);
+      cursor: pointer;
+      text-align: left;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+
+    .quick-launch-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--nav-accent-tint, rgba(103, 80, 164, 0.14));
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+    }
+
+    .quick-launch-btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--md-sys-color-primary);
+      box-shadow: 0 16px 36px rgba(17, 17, 26, 0.14);
+    }
+
+    .quick-launch-btn:hover::after {
+      opacity: 1;
+    }
+
+    .quick-launch-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: var(--md-sys-color-surface);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quick-launch-icon img {
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .quick-launch-label {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .quick-launch-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .quick-launch-subtitle {
+      font-size: 12px;
+      color: var(--md-sys-color-on-surface-variant);
+      line-height: 1.5;
+    }
+
+    .links-actions button:hover {
+      background: var(--md-sys-color-surface-container) !important;
+    }
+
+    .folder-header, .custom-link-item {
+      background: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .folder-header:hover, .custom-link-item:hover {
+      background: var(--md-sys-color-surface-container);
+    }
+
+    .calendar-header button {
+      color: var(--md-sys-color-primary);
+    }
+
+    .today-btn {
+      background: var(--md-sys-color-primary) !important;
+      color: var(--md-sys-color-on-primary) !important;
+    }
+
+    .add-event-quick-btn {
+      background: var(--md-sys-color-secondary) !important;
+      color: var(--md-sys-color-on-secondary) !important;
+    }
+
+    .add-todo-btn {
+      background: var(--md-sys-color-primary);
+      box-shadow: none;
+    }
+
+    .email-list .email-item {
+      background: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 18px;
+      padding: 14px 16px;
+    }
+
+    .email-item.unread {
+      border-color: var(--md-sys-color-primary);
+    }
+
+    .email-item:hover {
+      background: var(--md-sys-color-surface-container);
+    }
+
+    .email-message {
+      background: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 18px;
+    }
+
+    .email-message-header {
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .gmail-reply-banner {
+      background: var(--md-sys-color-surface-container);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 16px;
+    }
+
+    .gmail-reply-btn {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .gmail-reply-btn:hover {
+      background: #7f67be;
+    }
+
+    .no-unread-message {
+      background: var(--md-sys-color-surface-container);
+      border: 1px dashed var(--md-sys-color-outline-variant);
+      border-radius: 18px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .no-unread-message .material-icons {
+      color: var(--md-sys-color-primary);
+    }
+
+    .chat-board {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .chat-columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .chat-column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px;
+      background: var(--md-sys-color-surface-container-low);
+      border: 1px solid var(--md-sys-color-outline-variant);
+      border-radius: 24px;
+      min-height: 240px;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+
+    .chat-column-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .chat-column-header .material-symbols-rounded {
+      font-variation-settings: 'FILL' 1;
+      font-size: 22px;
+      color: var(--md-sys-color-primary);
+    }
+
+    .count-chip {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(103, 80, 164, 0.12);
+      color: var(--md-sys-color-primary);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chat-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+      max-height: 340px;
+      padding-right: 2px;
+    }
+
+    .chat-stream::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .chat-stream::-webkit-scrollbar-thumb {
+      background: rgba(103, 80, 164, 0.35);
+      border-radius: 999px;
+    }
+
+    .chat-entry {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--md-sys-color-surface);
+      border: 1px solid transparent;
+      border-radius: 20px;
+      padding: 14px 16px;
+      box-shadow: 0 8px 20px rgba(17, 17, 26, 0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border 0.2s ease;
+    }
+
+    .chat-entry:hover {
+      transform: translateY(-2px);
+      border-color: var(--md-sys-color-outline);
+      box-shadow: 0 18px 32px rgba(17, 17, 26, 0.18);
+    }
+
+    .chat-entry-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--md-sys-color-on-surface);
+    }
+
+    .chat-entry-snippet {
+      color: var(--md-sys-color-on-surface-variant);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .chat-entry-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .chat-entry-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-primary);
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+    }
+
+    .chat-entry-link:hover {
+      background: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .chat-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 28px;
+      border-radius: 24px;
+      border: 1px dashed var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface-container-low);
+      color: var(--md-sys-color-on-surface-variant);
+      text-align: center;
+    }
+
+    .chat-empty-state .material-symbols-rounded {
+      font-variation-settings: 'FILL' 0;
+      font-size: 28px;
+      color: var(--md-sys-color-secondary);
+    }
+
+    .assist-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--md-sys-color-outline-variant);
+      background: var(--md-sys-color-surface);
+      color: var(--md-sys-color-primary);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease, color 0.2s ease;
+    }
+
+    .assist-btn:hover {
+      background: var(--md-sys-color-primary);
+      border-color: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .chat-column-empty {
+      border: 1px dashed var(--md-sys-color-outline-variant);
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--md-sys-color-on-surface-variant);
+      background: var(--md-sys-color-surface);
+    }
+
+    footer {
+      background: var(--md-sys-color-surface-container);
+      border-top: 1px solid var(--md-sys-color-outline-variant);
+      color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .modal-content {
+      background: var(--md-sys-color-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .btn-primary {
+      background: var(--md-sys-color-primary);
+      color: var(--md-sys-color-on-primary);
+    }
+
+    .btn-secondary {
+      background: var(--md-sys-color-surface-container-low);
+      color: var(--md-sys-color-on-surface);
+      border: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .btn-secondary:hover {
+      background: var(--md-sys-color-surface-container);
+    }
+
+    .btn-danger {
+      background: var(--md-sys-color-error);
+    }
+
+    @media (max-width: 1200px) {
+      .main-content {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <div class="container">
+    <header>
+      <div class="header-left">
+        <h1 class="brand">
+          <span class="brand-logo" aria-hidden="true"></span>
+          <span class="brand-text">
+            <span class="brand-name">NexusHub</span>
+            <span class="brand-tagline">Unified workspace intelligence</span>
+          </span>
+        </h1>
+        <div class="nav-buttons">
+          <a href="https://gemini.google.com" target="_blank" class="nav-btn gemini">
+            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/gemini_color_48dp.png" alt="Gemini" loading="lazy">
+            Gemini
+          </a>
+          <a href="https://mail.google.com" target="_blank" class="nav-btn gmail" id="gmailBtn" aria-label="Gmail">
+            <span class="badge" id="unreadBadge" style="display: none;">0</span>
+            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/gmail_48dp.png" alt="Gmail" loading="lazy">
+            Gmail
+          </a>
+          <a href="https://chat.google.com" target="_blank" class="nav-btn chat" aria-label="Google Chat">
+            <span class="badge" id="chatBadge" style="display: none;">0</span>
+            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/chat_2020q4_48dp.png" alt="Chat" loading="lazy">
+            Chat
+          </a>
+          <a href="https://calendar.google.com" target="_blank" class="nav-btn calendar">
+            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/calendar_48dp.png" alt="Calendar" loading="lazy">
+            Calendar
+          </a>
+          <a href="https://drive.google.com" target="_blank" class="nav-btn drive">
+            <img class="nav-icon" src="https://www.gstatic.com/images/branding/product/2x/drive_2020q4_48dp.png" alt="Drive" loading="lazy">
+            Drive
+          </a>
+          <button type="button" class="nav-btn timer" onclick="openTimerWindow()">
+            <span class="material-symbols-rounded">timer</span>
+            タイマー
+          </button>
+        </div>
+      </div>
+      <div class="header-right">
+        <button type="button" class="mode-toggle" id="themeToggle" aria-label="テーマを切り替え">
+          <span class="material-icons" id="themeToggleIcon">dark_mode</span>
+          <span class="mode-toggle-label" id="themeToggleLabel">ダーク</span>
+        </button>
+        <div class="user-info">
+          <div class="user-email" id="userEmail">読み込み中...</div>
+        </div>
+        <div class="clock-section">
+          <div class="clock" id="clock">--:--:--</div>
+          <div class="date" id="date">----年--月--日</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="summary-dashboard">
+      <div class="summary-item" id="gmailSummary">
+        <div class="summary-icon email"><span class="material-symbols-rounded">mail</span></div>
+        <div class="summary-content">
+          <div class="summary-label">未読メール</div>
+          <div class="summary-value" id="summaryUnreadCount">
+            <span>0</span>
+            <span class="summary-unit">件</span>
+          </div>
+          <div class="summary-subtext" id="summaryLatestEmail"></div>
+        </div>
+      </div>
+
+      <div class="summary-item clickable" id="chatSummary" onclick="scrollToChat()">
+        <div class="summary-icon chat"><span class="material-symbols-rounded">forum</span></div>
+        <div class="summary-content">
+          <div class="summary-label">未読チャット</div>
+          <div class="summary-value" id="summaryChatCount">
+            <span>0</span>
+            <span class="summary-unit">件</span>
+          </div>
+          <div class="summary-subtext" id="summaryChatLatest"></div>
+          <div class="summary-meta" id="summaryChatBreakdown"></div>
+        </div>
+      </div>
+
+      <div class="summary-item clickable" id="todayEventSummary" onclick="showTodayEvents()">
+        <div class="summary-icon event"><span class="material-symbols-rounded">event</span></div>
+        <div class="summary-content">
+          <div class="summary-label">本日の予定</div>
+          <div class="summary-value" id="summaryEventCount">
+            <span>0</span>
+            <span class="summary-unit">件</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="summary-item clickable" id="nextEventSummary" onclick="showNextEventDetail()">
+        <div class="summary-icon next"><span class="material-symbols-rounded">schedule</span></div>
+        <div class="summary-content">
+          <div class="summary-label">次の予定</div>
+          <div class="summary-value" id="summaryNextEvent">予定なし</div>
+          <div class="summary-subtext" id="summaryNextEventTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="content-column">
+        <div class="info-card email-card">
+          <h2><span class="material-icons">inbox</span>最新メール</h2>
+          <div id="emailList">
+            <div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>
+          </div>
+        </div>
+
+        <div class="info-card chat-card" id="chatCard">
+          <h2><span class="material-icons">forum</span>未読チャット</h2>
+          <div class="chat-board" id="chatList">
+            <div class="chat-columns">
+              <section class="chat-column" aria-labelledby="chatDmHeading">
+                <div class="chat-column-header" id="chatDmHeading">
+                  <span class="material-symbols-rounded">person</span>
+                  <span>ダイレクトメッセージ</span>
+                  <span class="count-chip" id="chatDmCount">0</span>
+                </div>
+                <div class="chat-stream" id="chatDmList">
+                  <div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>
+                </div>
+              </section>
+              <section class="chat-column" aria-labelledby="chatSpaceHeading">
+                <div class="chat-column-header" id="chatSpaceHeading">
+                  <span class="material-symbols-rounded">groups</span>
+                  <span>スペース</span>
+                  <span class="count-chip" id="chatSpaceCount">0</span>
+                </div>
+                <div class="chat-stream" id="chatSpaceList">
+                  <div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>
+                </div>
+              </section>
+            </div>
+            <div class="chat-empty-state" id="chatEmptyState" style="display: none;">
+              <span class="material-symbols-rounded">mark_chat_read</span>
+              <p>最新の未読チャットはありません。</p>
+              <button class="assist-btn" type="button" onclick="window.open('https://chat.google.com', '_blank')">
+                <span class="material-symbols-rounded">open_in_new</span>Chatを開く
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-column">
+        <div class="info-card">
+          <div class="links-section">
+            <div class="links-header">
+              <div class="links-title"><span class="material-icons">bookmark</span>マイリンク</div>
+              <div class="links-actions">
+                <button class="add-folder-btn" onclick="openReorderModal()">
+                  <span class="material-icons">swap_vert</span>並替
+                </button>
+                <button class="add-folder-btn" onclick="openFolderModal()">
+                  <span class="material-icons">create_new_folder</span>フォルダ
+                </button>
+                <button class="add-link-btn" onclick="openLinkModal()">
+                  <span class="material-icons">add</span>リンク
+                </button>
+              </div>
+            </div>
+            <div id="customLinksList">
+              <div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-column utility-column">
+        <div class="info-card quick-actions-card">
+          <h2><span class="material-icons">rocket_launch</span>ワークスペースクイックランチャー</h2>
+          <p class="quick-actions-description">頻繁に使う Google Workspace アプリをワンクリックで起動できます。新規作成や会議の開始をスムーズに行いましょう。</p>
+          <div class="quick-launch-grid" id="quickLaunchGrid">
+            <button type="button" class="quick-launch-btn" data-url="https://docs.new" aria-label="Google ドキュメントを作成">
+              <span class="quick-launch-icon" aria-hidden="true"><img src="https://www.gstatic.com/images/branding/product/1x/docs_2020q4_48dp.png" alt=""></span>
+              <span class="quick-launch-label">
+                <span class="quick-launch-title">ドキュメント</span>
+                <span class="quick-launch-subtitle">空白のドキュメントを作成</span>
+              </span>
+            </button>
+            <button type="button" class="quick-launch-btn" data-url="https://sheets.new" aria-label="Google スプレッドシートを作成">
+              <span class="quick-launch-icon" aria-hidden="true"><img src="https://www.gstatic.com/images/branding/product/1x/sheets_2020q4_48dp.png" alt=""></span>
+              <span class="quick-launch-label">
+                <span class="quick-launch-title">スプレッドシート</span>
+                <span class="quick-launch-subtitle">チームで使えるシートを開始</span>
+              </span>
+            </button>
+            <button type="button" class="quick-launch-btn" data-url="https://slides.new" aria-label="Google スライドを作成">
+              <span class="quick-launch-icon" aria-hidden="true"><img src="https://www.gstatic.com/images/branding/product/1x/slides_2020q4_48dp.png" alt=""></span>
+              <span class="quick-launch-label">
+                <span class="quick-launch-title">スライド</span>
+                <span class="quick-launch-subtitle">プレゼン資料をすぐに準備</span>
+              </span>
+            </button>
+            <button type="button" class="quick-launch-btn" data-url="https://meet.new" aria-label="Google Meet を開始">
+              <span class="quick-launch-icon" aria-hidden="true"><img src="https://www.gstatic.com/images/branding/product/1x/meet_2020q4_48dp.png" alt=""></span>
+              <span class="quick-launch-label">
+                <span class="quick-launch-title">Meet</span>
+                <span class="quick-launch-subtitle">ビデオ会議を今すぐ開始</span>
+              </span>
+            </button>
+            <button type="button" class="quick-launch-btn" data-url="https://keep.google.com/" aria-label="Google Keep を開く">
+              <span class="quick-launch-icon" aria-hidden="true"><img src="https://www.gstatic.com/images/branding/product/1x/keep_2020q4_48dp.png" alt=""></span>
+              <span class="quick-launch-label">
+                <span class="quick-launch-title">Keep</span>
+                <span class="quick-launch-subtitle">アイデアやメモを整理</span>
+              </span>
+            </button>
+          </div>
+        </div>
+        <div class="info-card calendar-card">
+          <h2><span class="material-icons">event_note</span>カレンダー</h2>
+          <div class="calendar-widget">
+            <div class="calendar-header">
+              <div class="calendar-nav">
+                <button onclick="changeMonth(-1)"><span class="material-icons">chevron_left</span></button>
+                <button class="today-btn" onclick="goToToday()">今日</button>
+                <button onclick="changeMonth(1)"><span class="material-icons">chevron_right</span></button>
+                <button class="add-event-quick-btn" onclick="openEventModal()" title="予定を追加">
+                  <span class="material-icons">add</span>
+                </button>
+              </div>
+              <div class="calendar-month" id="calendarMonth"></div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>
+        </div>
+
+        <div class="info-card todo-card">
+          <div class="todo-section">
+            <div class="todo-header">
+              <h2 style="margin-bottom: 0;"><span class="material-icons">check_circle</span>Todoリスト</h2>
+              <button class="add-todo-btn" onclick="openTodoModal()">
+                <span class="material-icons">add</span>追加
+              </button>
+            </div>
+            <div id="todoList">
+              <div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <p>&copy; 2025 NexusHub - 統合ワークスペースポータル | Powered by T/G Policy</p>
+    </footer>
+  </div>
+
+  <!-- イベントモーダル -->
+  <div id="eventModal" class="modal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h3 id="eventModalTitle">予定</h3>
+        <button class="close-btn" onclick="closeModal('eventModal')">&times;</button>
+      </div>
+      <div id="eventModalBody"></div>
+      <button class="add-event-from-modal-btn" onclick="openEventModalFromDate()" style="display: none;" id="addEventFromDateBtn">
+        <span class="material-icons">add_circle</span>
+        この日に予定を追加
+      </button>
+    </div>
+  </div>
+
+  <!-- イベント編集モーダル -->
+  <div id="eventEditModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="eventEditModalTitle">予定を追加</h3>
+        <button class="close-btn" onclick="closeModal('eventEditModal')">&times;</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="eventTitleInput">タイトル *</label>
+          <input type="text" id="eventTitleInput" class="form-input" placeholder="予定のタイトル" />
+        </div>
+        <div class="form-checkbox-group">
+          <input type="checkbox" id="eventAllDayCheckbox" class="form-checkbox" onchange="toggleAllDay()" />
+          <label for="eventAllDayCheckbox" class="form-checkbox-label">終日</label>
+        </div>
+        <div class="form-row" id="eventDateTimeRow">
+          <div class="form-group">
+            <label for="eventStartInput">開始日時 *</label>
+            <input type="datetime-local" id="eventStartInput" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label for="eventEndInput">終了日時 *</label>
+            <input type="datetime-local" id="eventEndInput" class="form-input" />
+          </div>
+        </div>
+        <div class="form-row" id="eventDateRow" style="display: none;">
+          <div class="form-group">
+            <label for="eventStartDateInput">開始日 *</label>
+            <input type="date" id="eventStartDateInput" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label for="eventEndDateInput">終了日 *</label>
+            <input type="date" id="eventEndDateInput" class="form-input" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="eventLocationInput">場所</label>
+          <input type="text" id="eventLocationInput" class="form-input" placeholder="場所" />
+        </div>
+        <div class="form-group">
+          <label for="eventDescriptionInput">説明</label>
+          <textarea id="eventDescriptionInput" class="form-textarea" placeholder="説明"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="closeModal('eventEditModal')">キャンセル</button>
+          <button class="btn btn-danger" id="deleteEventBtn" onclick="deleteEvent()" style="display: none;">
+            <span class="material-icons" style="font-size: 18px;">delete</span>
+            削除
+          </button>
+          <button class="btn btn-primary" onclick="saveEvent()">
+            <span class="material-icons" style="font-size: 18px;">save</span>
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Todoモーダル -->
+  <div id="todoModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="todoModalTitle">新規タスク</h3>
+        <button class="close-btn" onclick="closeModal('todoModal')">&times;</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="todoTitleInput">タスク名 *</label>
+          <input type="text" id="todoTitleInput" class="form-input" placeholder="タスク名を入力..." />
+        </div>
+        <div class="form-group">
+          <label for="todoDueDateInput">期限</label>
+          <input type="date" id="todoDueDateInput" class="form-input" />
+        </div>
+        <div class="form-group">
+          <label for="todoNotesInput">メモ</label>
+          <textarea id="todoNotesInput" class="form-textarea" placeholder="メモ（任意）"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="closeModal('todoModal')">キャンセル</button>
+          <button class="btn btn-primary" onclick="saveTodo()">
+            <span class="material-icons" style="font-size: 18px;">save</span>
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- メールモーダル -->
+  <div id="emailModal" class="modal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h3 id="emailModalTitle">メール</h3>
+        <button class="close-btn" onclick="closeModal('emailModal')">&times;</button>
+      </div>
+      <div id="emailModalBody">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>読み込み中...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- リンクモーダル -->
+  <div id="linkModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="linkModalTitle">リンクを追加</h3>
+        <button class="close-btn" onclick="closeModal('linkModal')">&times;</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="linkTitleInput">タイトル *</label>
+          <input type="text" id="linkTitleInput" class="form-input" placeholder="例: 社内Wiki" />
+        </div>
+        <div class="form-group">
+          <label for="linkUrlInput">URL *</label>
+          <input type="url" id="linkUrlInput" class="form-input" placeholder="https://example.com" />
+        </div>
+        <div class="form-group">
+          <label for="linkIconInput">アイコン</label>
+          <select id="linkIconInput" class="form-select">
+            <option value="code">GASアプリ</option>
+            <option value="description">document</option>
+            <option value="table_chart">spreadsheet</option>
+            <option value="slideshow">slides</option>
+            <option value="folder">GoogleDrive</option>
+            <option value="language">Webサイト</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="linkFolderInput">フォルダ</label>
+          <select id="linkFolderInput" class="form-select">
+            <option value="">フォルダなし</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="closeModal('linkModal')">キャンセル</button>
+          <button class="btn btn-primary" onclick="saveLink()">
+            <span class="material-icons" style="font-size: 18px;">save</span>
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- フォルダモーダル -->
+  <div id="folderModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="folderModalTitle">フォルダを追加</h3>
+        <button class="close-btn" onclick="closeModal('folderModal')">&times;</button>
+      </div>
+      <div>
+        <div class="form-group">
+          <label for="folderNameInput">フォルダ名 *</label>
+          <input type="text" id="folderNameInput" class="form-input" placeholder="例: 仕事" />
+        </div>
+        <div class="form-group">
+          <label for="folderParentInput">親フォルダ</label>
+          <select id="folderParentInput" class="form-select">
+            <option value="">なし（トップレベル）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>カラー</label>
+          <div class="color-picker-group">
+            <div class="color-option" style="background: #667eea;" data-color="#667eea" onclick="selectColor('#667eea')"></div>
+            <div class="color-option" style="background: #43e97b;" data-color="#43e97b" onclick="selectColor('#43e97b')"></div>
+            <div class="color-option" style="background: #F093FB;" data-color="#F093FB" onclick="selectColor('#F093FB')"></div>
+            <div class="color-option" style="background: #4facfe;" data-color="#4facfe" onclick="selectColor('#4facfe')"></div>
+            <div class="color-option" style="background: #F5576C;" data-color="#F5576C" onclick="selectColor('#F5576C')"></div>
+            <div class="color-option" style="background: #fee140;" data-color="#fee140" onclick="selectColor('#fee140')"></div>
+            <div class="color-option" style="background: #30cfd0;" data-color="#30cfd0" onclick="selectColor('#30cfd0')"></div>
+            <div class="color-option" style="background: #8E54E9;" data-color="#8E54E9" onclick="selectColor('#8E54E9')"></div>
+            <div class="color-option" style="background: #E74C3C;" data-color="#E74C3C" onclick="selectColor('#E74C3C')"></div>
+            <div class="color-option" style="background: #F39C12;" data-color="#F39C12" onclick="selectColor('#F39C12')"></div>
+            <div class="color-option" style="background: #27AE60;" data-color="#27AE60" onclick="selectColor('#27AE60')"></div>
+            <div class="color-option" style="background: #2C3E50;" data-color="#2C3E50" onclick="selectColor('#2C3E50')"></div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-secondary" onclick="closeModal('folderModal')">キャンセル</button>
+          <button class="btn btn-primary" onclick="saveFolder()">
+            <span class="material-icons" style="font-size: 18px;">save</span>
+            保存
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 並び替えモーダル -->
+  <div id="reorderModal" class="modal reorder-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>並び替え</h3>
+        <button class="close-btn" onclick="closeModal('reorderModal')">&times;</button>
+      </div>
+      <div id="reorderContent">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <p>読み込み中...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentYear = new Date().getFullYear();
+    let currentMonth = new Date().getMonth() + 1;
+    let eventDatesData = {};
+    let currentTaskLists = [];
+    let editingTodoId = null;
+    let editingTodoListId = null;
+    let editingEventId = null;
+    let currentEventDate = null;
+    let emailRefreshInterval = null;
+    let chatRefreshInterval = null;
+    let calendarRefreshInterval = null;
+    let summaryRefreshInterval = null;
+    let currentThreadId = null;
+    let editingLinkId = null;
+    let editingFolderId = null;
+    let selectedColor = '#667eea';
+    let allFolders = [];
+    let allLinks = [];
+    let collapsedFolders = {};
+    let todayEventsData = [];
+    let nextEventData = null;
+
+    const THEME_STORAGE_KEY = 'nexushub-theme';
+    const themeToggleButton = document.getElementById('themeToggle');
+    const themeToggleIcon = document.getElementById('themeToggleIcon');
+    const themeToggleLabel = document.getElementById('themeToggleLabel');
+    const prefersDarkMediaQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+    function syncThemeToggle(theme) {
+      if (!themeToggleButton) return;
+      if (theme === 'dark') {
+        if (themeToggleIcon) themeToggleIcon.textContent = 'light_mode';
+        if (themeToggleLabel) themeToggleLabel.textContent = 'ライト';
+      } else {
+        if (themeToggleIcon) themeToggleIcon.textContent = 'dark_mode';
+        if (themeToggleLabel) themeToggleLabel.textContent = 'ダーク';
+      }
+    }
+
+    function applyTheme(theme, options) {
+      const root = document.body;
+      if (!root) return;
+      const normalized = theme === 'dark' ? 'dark' : 'light';
+      root.setAttribute('data-theme', normalized);
+      syncThemeToggle(normalized);
+      if (options && options.persist) {
+        try {
+          localStorage.setItem(THEME_STORAGE_KEY, normalized);
+        } catch (err) {
+          console.warn('テーマ設定を保存できませんでした:', err);
+        }
+      }
+    }
+
+    function getStoredTheme() {
+      try {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        if (stored === 'light' || stored === 'dark') {
+          return stored;
+        }
+      } catch (err) {
+        console.warn('テーマ設定の読み込みに失敗しました:', err);
+      }
+      return null;
+    }
+
+    function resolvePreferredTheme() {
+      const stored = getStoredTheme();
+      if (stored) {
+        return stored;
+      }
+      if (prefersDarkMediaQuery && typeof prefersDarkMediaQuery.matches === 'boolean') {
+        return prefersDarkMediaQuery.matches ? 'dark' : 'light';
+      }
+      return 'light';
+    }
+
+    function initializeTheme() {
+      const initialTheme = resolvePreferredTheme();
+      applyTheme(initialTheme);
+
+      if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', function() {
+          const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+          applyTheme(nextTheme, { persist: true });
+        });
+      }
+
+      if (prefersDarkMediaQuery) {
+        const handleMediaQueryChange = function(event) {
+          const stored = getStoredTheme();
+          if (stored) {
+            syncThemeToggle(stored);
+            return;
+          }
+          applyTheme(event.matches ? 'dark' : 'light');
+        };
+
+        if (typeof prefersDarkMediaQuery.addEventListener === 'function') {
+          prefersDarkMediaQuery.addEventListener('change', handleMediaQueryChange);
+        } else if (typeof prefersDarkMediaQuery.addListener === 'function') {
+          prefersDarkMediaQuery.addListener(handleMediaQueryChange);
+        }
+      }
+
+      window.addEventListener('storage', function(event) {
+        if (event.key === THEME_STORAGE_KEY) {
+          const nextTheme = event.newValue === 'dark' ? 'dark' : 'light';
+          applyTheme(nextTheme);
+        }
+      });
+    }
+
+    initializeTheme();
+
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      const clockElement = document.getElementById('clock');
+      if (clockElement) {
+        clockElement.textContent = hours + ':' + minutes + ':' + seconds;
+      }
+      
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdays[now.getDay()];
+      
+      const dateElement = document.getElementById('date');
+      if (dateElement) {
+        dateElement.textContent = year + '年' + month + '月' + day + '日 (' + weekday + ')';
+      }
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    function openTimerWindow() {
+      const timerUrl = new URL(window.location.href);
+      timerUrl.searchParams.set('page', 'timer');
+      timerUrl.hash = '';
+      const features = 'width=420,height=560,resizable=yes,scrollbars=yes';
+      const timerWindow = window.open(timerUrl.toString(), 'nexushub-timer', features);
+      if (timerWindow && typeof timerWindow.focus === 'function') {
+        timerWindow.focus();
+      } else {
+        alert('ポップアップがブロックされました。タイマーを開くには許可してください。');
+      }
+    }
+
+    function scrollToChat() {
+      const chatCard = document.getElementById('chatCard');
+      if (chatCard) {
+        chatCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        chatCard.classList.add('highlight-card');
+        setTimeout(function() {
+          chatCard.classList.remove('highlight-card');
+        }, 1600);
+      }
+    }
+
+    google.script.run
+      .withSuccessHandler(function(userInfo) {
+        const emailElement = document.getElementById('userEmail');
+        if (emailElement) {
+          emailElement.textContent = userInfo.email;
+        }
+      })
+      .withFailureHandler(function(error) {
+        const emailElement = document.getElementById('userEmail');
+        if (emailElement) {
+          emailElement.textContent = '情報取得失敗';
+        }
+      })
+      .getUserInfo();
+
+    function updateSummaryDashboard() {
+      const today = new Date();
+      const dateStr = today.getFullYear() + '-' + 
+                     String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                     String(today.getDate()).padStart(2, '0');
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (data.success && data.events) {
+            todayEventsData = data.events;
+            const countElement = document.getElementById('summaryEventCount');
+            if (countElement && countElement.querySelector) {
+              const spanElement = countElement.querySelector('span');
+              if (spanElement) {
+                spanElement.textContent = data.events.length;
+              }
+            }
+            
+            const now = new Date();
+            const upcomingEvents = data.events.filter(function(event) {
+              return new Date(event.startTime) > now;
+            });
+            
+            if (upcomingEvents.length > 0) {
+              const nextEvent = upcomingEvents[0];
+              nextEventData = nextEvent;
+              const startTime = new Date(nextEvent.startTime);
+              const timeStr = String(startTime.getHours()).padStart(2, '0') + ':' + 
+                             String(startTime.getMinutes()).padStart(2, '0');
+              
+              const titleElement = document.getElementById('summaryNextEvent');
+              if (titleElement) {
+                titleElement.textContent = nextEvent.title.length > 15 ? 
+                                          nextEvent.title.substring(0, 15) + '...' : 
+                                          nextEvent.title;
+              }
+              
+              const timeElement = document.getElementById('summaryNextEventTime');
+              if (timeElement) {
+                timeElement.textContent = timeStr + ' 開始';
+              }
+              
+              const summaryElement = document.getElementById('nextEventSummary');
+              if (summaryElement) {
+                summaryElement.style.cursor = 'pointer';
+              }
+            } else {
+              nextEventData = null;
+              const titleElement = document.getElementById('summaryNextEvent');
+              if (titleElement) {
+                titleElement.textContent = '予定なし';
+              }
+              
+              const timeElement = document.getElementById('summaryNextEventTime');
+              if (timeElement) {
+                timeElement.textContent = '';
+              }
+              
+              const summaryElement = document.getElementById('nextEventSummary');
+              if (summaryElement) {
+                summaryElement.style.cursor = 'default';
+              }
+            }
+          }
+        })
+        .getCalendarEvents(dateStr);
+    }
+
+    function showTodayEvents() {
+      const today = new Date();
+      const dateStr = today.getFullYear() + '-' + 
+                     String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                     String(today.getDate()).padStart(2, '0');
+      
+      showDayEvents(dateStr);
+    }
+
+    function showNextEventDetail() {
+      if (!nextEventData) return;
+      
+      const modal = document.getElementById('eventModal');
+      const modalBody = document.getElementById('eventModalBody');
+      const addBtn = document.getElementById('addEventFromDateBtn');
+      
+      const startTime = new Date(nextEventData.startTime);
+      const endTime = new Date(nextEventData.endTime);
+      
+      const year = startTime.getFullYear();
+      const month = startTime.getMonth() + 1;
+      const day = startTime.getDate();
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdays[startTime.getDay()];
+      
+      const titleElement = document.getElementById('eventModalTitle');
+      if (titleElement) {
+        titleElement.textContent = nextEventData.title;
+      }
+      
+      if (addBtn) {
+        addBtn.style.display = 'none';
+      }
+      
+      let timeStr = '';
+      if (nextEventData.isAllDay) {
+        timeStr = '終日';
+      } else {
+        timeStr = String(startTime.getHours()).padStart(2, '0') + ':' + 
+                 String(startTime.getMinutes()).padStart(2, '0') + ' - ' +
+                 String(endTime.getHours()).padStart(2, '0') + ':' + 
+                 String(endTime.getMinutes()).padStart(2, '0');
+      }
+      
+      let detailHTML = '<div class="event-item">';
+      detailHTML += '<div class="event-time">' + timeStr + '</div>';
+      detailHTML += '<div class="event-title">' + escapeHtml(nextEventData.title) + '</div>';
+      detailHTML += '<div class="event-details">📅 ' + year + '年' + month + '月' + day + '日 (' + weekday + ')</div>';
+      if (nextEventData.location) {
+        detailHTML += '<div class="event-details">📍 ' + escapeHtml(nextEventData.location) + '</div>';
+      }
+      if (nextEventData.description) {
+        detailHTML += '<div class="event-details" style="margin-top: 10px;">' + escapeHtml(nextEventData.description) + '</div>';
+      }
+      detailHTML += '<div class="event-details" style="margin-top: 10px; color: #7F8C8D;">📅 ' + escapeHtml(nextEventData.calendarName) + '</div>';
+      detailHTML += '</div>';
+      
+      if (modalBody) {
+        modalBody.innerHTML = detailHTML;
+      }
+      
+      if (modal) {
+        modal.style.display = 'block';
+      }
+    }
+
+    function loadGmailData() {
+      google.script.run
+        .withSuccessHandler(function(gmailData) {
+          if (!gmailData.success) {
+            const emailList = document.getElementById('emailList');
+            if (emailList) {
+              emailList.innerHTML = '<p style="text-align: center; color: #E74C3C; padding: 20px;">メールの取得に失敗しました</p>';
+            }
+            return;
+          }
+          
+          const countElement = document.getElementById('summaryUnreadCount');
+          if (countElement && countElement.querySelector) {
+            const spanElement = countElement.querySelector('span');
+            if (spanElement) {
+              spanElement.textContent = gmailData.unreadCount;
+            }
+          }
+          
+          if (gmailData.unreadCount > 0) {
+            const badge = document.getElementById('unreadBadge');
+            if (badge) {
+              badge.textContent = gmailData.unreadCount > 99 ? '99+' : gmailData.unreadCount;
+              badge.style.display = 'block';
+            }
+          } else {
+            const badge = document.getElementById('unreadBadge');
+            if (badge) {
+              badge.style.display = 'none';
+            }
+          }
+
+          const emailSummarySubtitle = document.getElementById('summaryLatestEmail');
+          if (emailSummarySubtitle) {
+            if (gmailData.unreadCount > 0 && gmailData.latestEmails && gmailData.latestEmails.length > 0) {
+              const firstEmail = gmailData.latestEmails[0];
+              const subjectPreview = truncateText(firstEmail.subject || '(件名なし)', 24);
+              emailSummarySubtitle.textContent = '最新: ' + subjectPreview;
+            } else if (gmailData.unreadCount === 0) {
+              emailSummarySubtitle.textContent = '最新の未読はありません';
+            }
+          }
+          
+          const emailList = document.getElementById('emailList');
+          if (!emailList) return;
+
+          if (gmailData.unreadCount === 0) {
+            emailList.innerHTML = '<div class="no-unread-message"><span class="material-icons">check_circle</span><p>未読メールはありません</p></div>';
+            return;
+          }
+          
+          if (gmailData.latestEmails && gmailData.latestEmails.length > 0) {
+            let emailHTML = '<ul class="email-list">';
+            
+            gmailData.latestEmails.forEach(function(email) {
+              const date = new Date(email.date);
+              const formattedDate = formatEmailDate(date);
+              
+              emailHTML += '<li class="email-item ' + (email.isUnread ? 'unread' : '') + '" onclick="showEmailThread(\'' + email.threadId + '\')">';
+              emailHTML += '<div class="email-header">';
+              emailHTML += '<span class="email-from">' + escapeHtml(email.from) + '</span>';
+              emailHTML += '<span class="email-date">' + formattedDate + '</span>';
+              emailHTML += '</div>';
+              emailHTML += '<div class="email-subject">' + escapeHtml(email.subject) + '</div>';
+              emailHTML += '<div class="email-snippet">' + escapeHtml(email.snippet) + '</div>';
+              emailHTML += '</li>';
+            });
+            
+            emailHTML += '</ul>';
+            emailList.innerHTML = emailHTML;
+          }
+        })
+        .withFailureHandler(function(error) {
+          const emailList = document.getElementById('emailList');
+          if (emailList) {
+            emailList.innerHTML = '<p style="text-align: center; color: #E74C3C; padding: 20px;">メールの取得に失敗しました</p>';
+          }
+          const emailSummarySubtitle = document.getElementById('summaryLatestEmail');
+          if (emailSummarySubtitle) {
+            emailSummarySubtitle.textContent = 'メール情報の取得に失敗しました';
+          }
+        })
+        .getGmailData();
+    }
+
+    function loadChatData() {
+      google.script.run
+        .withSuccessHandler(function(chatData) {
+          const summaryCountElement = document.getElementById('summaryChatCount');
+          const summaryLatestElement = document.getElementById('summaryChatLatest');
+          const breakdownElement = document.getElementById('summaryChatBreakdown');
+          const chatBadge = document.getElementById('chatBadge');
+          const dmCountLabel = document.getElementById('chatDmCount');
+          const spaceCountLabel = document.getElementById('chatSpaceCount');
+          const dmList = document.getElementById('chatDmList');
+          const spaceList = document.getElementById('chatSpaceList');
+          const emptyState = document.getElementById('chatEmptyState');
+
+          const totalUnread = chatData && typeof chatData.totalUnread === 'number' ? chatData.totalUnread : 0;
+          const directCount = chatData && typeof chatData.directCount === 'number' ? chatData.directCount : 0;
+          const spaceCount = chatData && typeof chatData.spaceCount === 'number' ? chatData.spaceCount : 0;
+
+          if (summaryCountElement && summaryCountElement.querySelector) {
+            const spanElement = summaryCountElement.querySelector('span');
+            if (spanElement) {
+              spanElement.textContent = totalUnread;
+            }
+          }
+
+          if (breakdownElement) {
+            breakdownElement.innerHTML = '<span>DM ' + directCount + '件</span><span>スペース ' + spaceCount + '件</span>';
+          }
+
+          if (chatBadge) {
+            if (totalUnread > 0) {
+              chatBadge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+              chatBadge.style.display = 'block';
+            } else {
+              chatBadge.style.display = 'none';
+            }
+          }
+
+          if (!chatData || !chatData.success) {
+            if (summaryLatestElement) {
+              summaryLatestElement.textContent = 'チャット情報の取得に失敗しました';
+            }
+            if (breakdownElement) {
+              breakdownElement.innerHTML = '<span>DM 0件</span><span>スペース 0件</span>';
+            }
+            if (dmCountLabel) dmCountLabel.textContent = '0';
+            if (spaceCountLabel) spaceCountLabel.textContent = '0';
+            if (dmList) dmList.innerHTML = '<div class="chat-column-empty">チャット情報の取得に失敗しました</div>';
+            if (spaceList) spaceList.innerHTML = '<div class="chat-column-empty">チャット情報の取得に失敗しました</div>';
+            if (emptyState) {
+              emptyState.style.display = 'flex';
+              const message = emptyState.querySelector('p');
+              if (message) {
+                message.textContent = 'チャット情報の取得に失敗しました。';
+              }
+            }
+            return;
+          }
+
+          if (chatData.unreadCount > 0 && (!chatData.conversations || chatData.conversations.length === 0)) {
+            if (summaryLatestElement) {
+              summaryLatestElement.textContent = '未読チャットがあります（詳細取得不可）';
+            }
+            if (chatList) {
+              chatList.innerHTML = '<div class="no-unread-message"><span class="material-icons">support_agent</span><p>未読チャットがありますが詳細を取得できませんでした。Chatを開いて確認してください。</p></div>';
+            }
+            return;
+          }
+
+          if (dmCountLabel) dmCountLabel.textContent = String(directCount);
+          if (spaceCountLabel) spaceCountLabel.textContent = String(spaceCount);
+
+          if (summaryLatestElement) {
+            if (chatData.latestConversation) {
+              summaryLatestElement.textContent = '最新: ' + truncateText(chatData.latestConversation.title || chatData.latestConversation.author || 'チャット', 24);
+            } else {
+              summaryLatestElement.textContent = '最新の未読はありません';
+            }
+          }
+
+          const renderChatEntries = function(container, items, emptyMessage) {
+            if (!container) return;
+            if (!items || items.length === 0) {
+              container.innerHTML = '<div class="chat-column-empty">' + emptyMessage + '</div>';
+              return;
+            }
+
+            let entries = '';
+            items.forEach(function(conversation) {
+              const lastUpdated = new Date(conversation.lastUpdated);
+              const relativeTime = formatRelativeTime(lastUpdated);
+              const title = escapeHtml(conversation.title || 'チャット');
+              const author = escapeHtml(conversation.author || 'メンバー');
+              const snippet = escapeHtml(conversation.preview || 'メッセージは表示できません');
+              const permalink = conversation.permalink ? encodeURI(conversation.permalink) : '';
+
+              entries += '<article class="chat-entry">';
+              entries += '<div class="chat-entry-title"><span>' + title + '</span><span>' + relativeTime + '</span></div>';
+              entries += '<div class="chat-entry-snippet">' + snippet + '</div>';
+              entries += '<div class="chat-entry-meta">';
+              entries += '<span>' + author + '</span>';
+              if (permalink) {
+                entries += '<a class="chat-entry-link" href="' + permalink + '" target="_blank" rel="noopener">Chatを開く</a>';
+              } else {
+                entries += '<span></span>';
+              }
+              entries += '</div>';
+              entries += '</article>';
+            });
+
+            container.innerHTML = entries;
+          };
+
+          if (totalUnread === 0) {
+            if (emptyState) {
+              emptyState.style.display = 'flex';
+              const message = emptyState.querySelector('p');
+              if (message) {
+                message.textContent = '最新の未読チャットはありません。';
+              }
+            }
+            renderChatEntries(dmList, [], '未読のダイレクトメッセージはありません');
+            renderChatEntries(spaceList, [], '未読のスペースはありません');
+            return;
+          }
+
+          if (emptyState) {
+            emptyState.style.display = 'none';
+          }
+
+          renderChatEntries(dmList, chatData.directMessages, '未読のダイレクトメッセージはありません');
+          renderChatEntries(spaceList, chatData.spaces, '未読のスペースはありません');
+        })
+        .withFailureHandler(function() {
+          const summaryCountElement = document.getElementById('summaryChatCount');
+          const summaryLatestElement = document.getElementById('summaryChatLatest');
+          const breakdownElement = document.getElementById('summaryChatBreakdown');
+          const dmList = document.getElementById('chatDmList');
+          const spaceList = document.getElementById('chatSpaceList');
+          const dmCountLabel = document.getElementById('chatDmCount');
+          const spaceCountLabel = document.getElementById('chatSpaceCount');
+          const emptyState = document.getElementById('chatEmptyState');
+          const chatBadge = document.getElementById('chatBadge');
+
+          if (summaryCountElement && summaryCountElement.querySelector) {
+            const spanElement = summaryCountElement.querySelector('span');
+            if (spanElement) {
+              spanElement.textContent = 0;
+            }
+          }
+
+          if (summaryLatestElement) {
+            summaryLatestElement.textContent = 'チャット情報の取得に失敗しました';
+          }
+
+          if (breakdownElement) {
+            breakdownElement.innerHTML = '<span>DM 0件</span><span>スペース 0件</span>';
+          }
+
+          if (dmCountLabel) dmCountLabel.textContent = '0';
+          if (spaceCountLabel) spaceCountLabel.textContent = '0';
+          if (dmList) dmList.innerHTML = '<div class="chat-column-empty">チャット情報の取得に失敗しました</div>';
+          if (spaceList) spaceList.innerHTML = '<div class="chat-column-empty">チャット情報の取得に失敗しました</div>';
+          if (emptyState) {
+            emptyState.style.display = 'flex';
+            const message = emptyState.querySelector('p');
+            if (message) {
+              message.textContent = 'チャット情報の取得に失敗しました。';
+            }
+          }
+          if (chatBadge) {
+            chatBadge.style.display = 'none';
+          }
+        })
+        .getChatData();
+    }
+
+    function initializeQuickLaunch() {
+      const launchGrid = document.getElementById('quickLaunchGrid');
+      if (!launchGrid) {
+        return;
+      }
+
+      launchGrid.addEventListener('click', function(event) {
+        const origin = event.target;
+        const target = origin && typeof origin.closest === 'function' ? origin.closest('.quick-launch-btn') : null;
+        if (!target) {
+          return;
+        }
+
+        const destination = target.getAttribute('data-url');
+        if (!destination) {
+          return;
+        }
+
+        const opened = window.open(destination, '_blank', 'noopener');
+        if (!opened) {
+          alert('ポップアップがブロックされました。別タブでの起動を許可してください。');
+        }
+      });
+    }
+
+    loadGmailData();
+    loadChatData();
+    updateSummaryDashboard();
+    initializeQuickLaunch();
+
+    emailRefreshInterval = setInterval(loadGmailData, 30000);
+    chatRefreshInterval = setInterval(loadChatData, 30000);
+    summaryRefreshInterval = setInterval(updateSummaryDashboard, 60000);
+
+    function convertLinksToClickable(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, function(url) {
+        return '<a href="' + url + '" target="_blank">' + url + '</a>';
+      });
+    }
+
+    function showEmailThread(threadId) {
+      currentThreadId = threadId;
+      const modal = document.getElementById('eventModal');
+      const modalBody = document.getElementById('emailModalBody');
+      const emailModal = document.getElementById('emailModal');
+      
+      const titleElement = document.getElementById('emailModalTitle');
+      if (titleElement) {
+        titleElement.textContent = 'メール';
+      }
+      
+      if (modalBody) {
+        modalBody.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>';
+      }
+      
+      if (emailModal) {
+        emailModal.style.display = 'block';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function() {
+          loadGmailData();
+        })
+        .markThreadAsRead(threadId);
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (!data.success) {
+            if (modalBody) {
+              modalBody.innerHTML = '<p class="no-events">メールの取得に失敗しました</p>';
+            }
+            return;
+          }
+          
+          const messageCount = data.messages.length;
+          const titleWithCount = data.subject + (messageCount > 1 ? ' (' + messageCount + '件)' : '');
+          if (titleElement) {
+            titleElement.textContent = titleWithCount;
+          }
+          
+          let threadHTML = '';
+          
+          threadHTML += '<div class="gmail-reply-banner">';
+          threadHTML += '<div class="gmail-reply-text">';
+          threadHTML += '<span class="material-icons">reply</span>';
+          threadHTML += '返信する場合はこちらから';
+          threadHTML += '</div>';
+          threadHTML += '<a href="https://mail.google.com/mail/u/0/#inbox/' + threadId + '" target="_blank" class="gmail-reply-btn">';
+          threadHTML += '<span class="material-icons">open_in_new</span>';
+          threadHTML += 'Gmailで開く';
+          threadHTML += '</a>';
+          threadHTML += '</div>';
+          
+          threadHTML += '<div class="email-thread">';
+          
+          data.messages.forEach(function(message, index) {
+            const date = new Date(message.date);
+            const formattedDate = date.getFullYear() + '年' + 
+                                 (date.getMonth() + 1) + '月' + 
+                                 date.getDate() + '日';
+            const formattedTime = String(date.getHours()).padStart(2, '0') + ':' +
+                                 String(date.getMinutes()).padStart(2, '0');
+            
+            const messageNumber = index + 1;
+            
+            threadHTML += '<div class="email-message">';
+            threadHTML += '<div class="email-message-header">';
+            threadHTML += '<div class="email-message-from">' + escapeHtml(message.from);
+            if (messageCount > 1) {
+              threadHTML += '<span class="email-count-badge">' + messageNumber + '/' + messageCount + '</span>';
+            }
+            threadHTML += '</div>';
+            threadHTML += '<div class="email-message-meta">';
+            threadHTML += '<div class="email-message-meta-row">';
+            threadHTML += '<span class="material-icons">person</span>';
+            threadHTML += '<span class="email-message-meta-label">宛先:</span>';
+            threadHTML += '<span>' + escapeHtml(message.to) + '</span>';
+            threadHTML += '</div>';
+            threadHTML += '<div class="email-message-meta-row">';
+            threadHTML += '<span class="material-icons">schedule</span>';
+            threadHTML += '<span class="email-message-meta-label">日時:</span>';
+            threadHTML += '<span>' + formattedDate + ' ' + formattedTime + '</span>';
+            threadHTML += '</div>';
+            threadHTML += '</div>';
+            threadHTML += '</div>';
+            
+            const bodyWithLinks = convertLinksToClickable(escapeHtml(message.body));
+            threadHTML += '<div class="email-message-body">' + bodyWithLinks + '</div>';
+            
+            if (message.attachments && message.attachments.length > 0) {
+              threadHTML += '<div class="email-attachments">';
+              threadHTML += '<div class="email-attachments-title">';
+              threadHTML += '<span class="material-icons">attach_file</span>';
+              threadHTML += '添付ファイル (' + message.attachments.length + '件)';
+              threadHTML += '</div>';
+              threadHTML += '<div class="attachment-list">';
+              
+              const actualIndex = data.messages.length - 1 - index;
+              
+              message.attachments.forEach(function(attachment, attIndex) {
+                const sizeKB = (attachment.size / 1024).toFixed(1);
+                const sizeMB = (attachment.size / (1024 * 1024)).toFixed(2);
+                const sizeText = attachment.size > 1024 * 1024 ? sizeMB + ' MB' : sizeKB + ' KB';
+                
+                threadHTML += '<div class="attachment-item">';
+                threadHTML += '<div class="attachment-info">';
+                threadHTML += '<span class="material-icons attachment-icon">insert_drive_file</span>';
+                threadHTML += '<div class="attachment-details">';
+                threadHTML += '<div class="attachment-name">' + escapeHtml(attachment.name) + '</div>';
+                threadHTML += '<div class="attachment-size">' + sizeText + '</div>';
+                threadHTML += '</div>';
+                threadHTML += '</div>';
+                threadHTML += '<button class="attachment-download-btn" onclick="downloadAttachment(\'' + threadId + '\', ' + actualIndex + ', ' + attIndex + ')">';
+                threadHTML += '<span class="material-icons">download</span>';
+                threadHTML += 'ダウンロード';
+                threadHTML += '</button>';
+                threadHTML += '</div>';
+              });
+              
+              threadHTML += '</div>';
+              threadHTML += '</div>';
+            }
+            
+            threadHTML += '</div>';
+          });
+          
+          threadHTML += '</div>';
+          if (modalBody) {
+            modalBody.innerHTML = threadHTML;
+          }
+        })
+        .withFailureHandler(function(error) {
+          if (modalBody) {
+            modalBody.innerHTML = '<p class="no-events">メールの取得に失敗しました</p>';
+          }
+        })
+        .getEmailThread(threadId);
+    }
+
+    function downloadAttachment(threadId, messageIndex, attachmentIndex) {
+      const btn = event.target.closest('.attachment-download-btn');
+      if (!btn) return;
+      
+      const originalHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-icons">hourglass_empty</span>処理中...';
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            const byteCharacters = atob(result.data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: result.contentType });
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = result.name;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-icons">check</span>完了';
+            setTimeout(function() {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          } else {
+            alert('ダウンロードに失敗しました: ' + result.error);
+            btn.disabled = false;
+            btn.innerHTML = originalHTML;
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('ダウンロードに失敗しました');
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        })
+        .downloadAttachment(threadId, messageIndex, attachmentIndex);
+    }
+
+    function loadTodoList() {
+      google.script.run
+        .withSuccessHandler(function(todoData) {
+          const todoList = document.getElementById('todoList');
+          if (!todoList) return;
+          
+          if (!todoData.success) {
+            todoList.innerHTML = '<p style="text-align: center; color: #E74C3C; padding: 20px;">Todoの取得に失敗しました</p>';
+            return;
+          }
+          
+          currentTaskLists = todoData.taskLists;
+          
+          if (todoData.tasks && todoData.tasks.length > 0) {
+            let todoHTML = '<ul class="todo-list">';
+            
+            todoData.tasks.forEach(function(task) {
+              let dueText = '';
+              if (task.due) {
+                const dueDate = new Date(task.due);
+                dueText = '<span class="todo-due">' + formatTodoDate(dueDate) + '</span>';
+              }
+              
+              todoHTML += '<li class="todo-item">';
+              todoHTML += '<div class="todo-main">';
+              todoHTML += '<div class="todo-content" onclick="editTodo(\'' + task.id + '\', \'' + task.listId + '\', \'' + escapeHtml(task.title).replace(/'/g, "\\'") + '\', \'' + (task.due || '') + '\', \'' + escapeHtml(task.notes || '').replace(/'/g, "\\'") + '\')">';
+              todoHTML += '<div class="todo-title">' + escapeHtml(task.title) + '</div>';
+              todoHTML += '<div class="todo-meta">';
+              todoHTML += '<span>' + escapeHtml(task.listName) + '</span>';
+              if (dueText) todoHTML += dueText;
+              todoHTML += '</div>';
+              todoHTML += '</div>';
+              todoHTML += '<div class="todo-actions">';
+              todoHTML += '<button class="todo-action-btn complete" onclick="event.stopPropagation(); completeTodo(\'' + task.id + '\', \'' + task.listId + '\')" title="完了">';
+              todoHTML += '<span class="material-icons">check_circle</span>';
+              todoHTML += '</button>';
+              todoHTML += '<button class="todo-action-btn delete" onclick="event.stopPropagation(); deleteTodo(\'' + task.id + '\', \'' + task.listId + '\')" title="削除">';
+              todoHTML += '<span class="material-icons">delete</span>';
+              todoHTML += '</button>';
+              todoHTML += '</div>';
+              todoHTML += '</div>';
+              
+              if (task.subtasks && task.subtasks.length > 0) {
+                todoHTML += '<div class="subtasks">';
+                task.subtasks.forEach(function(subtask) {
+                  todoHTML += '<div class="subtask-item">';
+                  todoHTML += '<span class="material-icons">subdirectory_arrow_right</span>';
+                  todoHTML += '<span>' + escapeHtml(subtask.title) + '</span>';
+                  todoHTML += '</div>';
+                });
+                todoHTML += '</div>';
+              }
+              
+              todoHTML += '</li>';
+            });
+            
+            todoHTML += '</ul>';
+            todoList.innerHTML = todoHTML;
+          } else {
+            todoList.innerHTML = '<p style="text-align: center; color: #95A5A6; padding: 20px;">Todoがありません</p>';
+          }
+        })
+        .withFailureHandler(function(error) {
+          const todoList = document.getElementById('todoList');
+          if (todoList) {
+            todoList.innerHTML = '<p style="text-align: center; color: #E74C3C; padding: 20px;">Todoの取得に失敗しました</p>';
+          }
+        })
+        .getTodoTasks();
+    }
+
+    loadTodoList();
+
+    function openTodoModal() {
+      editingTodoId = null;
+      editingTodoListId = null;
+      const titleElement = document.getElementById('todoModalTitle');
+      if (titleElement) titleElement.textContent = '新規タスク';
+      
+      const titleInput = document.getElementById('todoTitleInput');
+      if (titleInput) titleInput.value = '';
+      
+      const dueDateInput = document.getElementById('todoDueDateInput');
+      if (dueDateInput) dueDateInput.value = '';
+      
+      const notesInput = document.getElementById('todoNotesInput');
+      if (notesInput) notesInput.value = '';
+      
+      const modal = document.getElementById('todoModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function editTodo(taskId, listId, title, dueDate, notes) {
+      editingTodoId = taskId;
+      editingTodoListId = listId;
+      
+      const titleElement = document.getElementById('todoModalTitle');
+      if (titleElement) titleElement.textContent = 'タスク編集';
+      
+      const titleInput = document.getElementById('todoTitleInput');
+      if (titleInput) titleInput.value = title;
+      
+      const notesInput = document.getElementById('todoNotesInput');
+      if (notesInput) notesInput.value = notes || '';
+      
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const dateStr = date.getFullYear() + '-' + 
+                       String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(date.getDate()).padStart(2, '0');
+        const dueDateInput = document.getElementById('todoDueDateInput');
+        if (dueDateInput) dueDateInput.value = dateStr;
+      } else {
+        const dueDateInput = document.getElementById('todoDueDateInput');
+        if (dueDateInput) dueDateInput.value = '';
+      }
+      
+      const modal = document.getElementById('todoModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function saveTodo() {
+      const titleInput = document.getElementById('todoTitleInput');
+      const dueDateInput = document.getElementById('todoDueDateInput');
+      const notesInput = document.getElementById('todoNotesInput');
+      
+      const title = titleInput ? titleInput.value.trim() : '';
+      const dueDate = dueDateInput ? dueDateInput.value || null : null;
+      const notes = notesInput ? notesInput.value.trim() || null : null;
+      
+      if (!title) {
+        alert('タスク名を入力してください');
+        return;
+      }
+      
+      closeModal('todoModal');
+      const todoList = document.getElementById('todoList');
+      if (todoList) {
+        todoList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>保存中...</p></div>';
+      }
+      
+      if (editingTodoId) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadTodoList();
+              loadMonthEvents();
+            } else {
+              alert('タスクの更新に失敗しました');
+              loadTodoList();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('タスクの更新に失敗しました');
+            loadTodoList();
+          })
+          .updateTodoTask(editingTodoId, editingTodoListId, title, dueDate, notes);
+      } else {
+        const listId = currentTaskLists.length > 0 ? currentTaskLists[0].id : null;
+        
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadTodoList();
+              loadMonthEvents();
+            } else {
+              alert('タスクの追加に失敗しました');
+              loadTodoList();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('タスクの追加に失敗しました');
+            loadTodoList();
+          })
+          .addTodoTask(title, listId, dueDate, notes);
+      }
+    }
+
+    function completeTodo(taskId, listId) {
+      if (!confirm('このタスクを完了しますか?')) return;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadTodoList();
+            loadMonthEvents();
+          } else {
+            alert('タスクの完了に失敗しました');
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('タスクの完了に失敗しました');
+        })
+        .completeTodoTask(taskId, listId);
+    }
+
+    function deleteTodo(taskId, listId) {
+      if (!confirm('このタスクを削除しますか?')) return;
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadTodoList();
+            loadMonthEvents();
+          } else {
+            alert('タスクの削除に失敗しました');
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('タスクの削除に失敗しました');
+        })
+        .deleteTodoTask(taskId, listId);
+    }
+
+    function renderFolderWithChildren(folder, level) {
+      const folderLinks = allLinks.filter(link => link.folderId === folder.id);
+      const childFolders = allFolders.filter(f => f.parentFolderId === folder.id);
+      const isCollapsed = collapsedFolders[folder.id] || false;
+      const nestedClass = level > 0 ? ' nested' : '';
+      
+      let html = '';
+      html += '<div class="folder-container' + nestedClass + '">';
+      html += '<div class="folder-header ' + (isCollapsed ? 'collapsed' : '') + '" data-folder-id="' + folder.id + '" onclick="toggleFolder(\'' + folder.id + '\')">';
+      html += '<div class="folder-left">';
+      html += '<span class="material-icons folder-icon" style="color: ' + folder.color + ';">folder</span>';
+      html += '<span class="folder-name">' + escapeHtml(folder.name) + '</span>';
+      html += '<span class="folder-count">(' + folderLinks.length + ')</span>';
+      html += '</div>';
+      html += '<div class="folder-actions" onclick="event.stopPropagation();">';
+      html += '<button class="folder-action-btn edit" onclick="editFolder(\'' + folder.id + '\', \'' + escapeHtml(folder.name).replace(/'/g, "\\'") + '\', \'' + folder.color + '\', \'' + (folder.parentFolderId || '') + '\')" title="編集">';
+      html += '<span class="material-icons">edit</span>';
+      html += '</button>';
+      html += '<button class="folder-action-btn delete" onclick="deleteFolder(\'' + folder.id + '\')" title="削除">';
+      html += '<span class="material-icons">delete</span>';
+      html += '</button>';
+      html += '</div>';
+      html += '</div>';
+      
+      html += '<div class="folder-links' + (isCollapsed ? ' collapsed' : '') + '" data-folder-id="' + folder.id + '">';
+      if (!isCollapsed) {
+        folderLinks.forEach(function(link) {
+          html += renderLinkItem(link);
+        });
+      }
+      html += '</div>';
+      
+      if (!isCollapsed) {
+        childFolders.forEach(function(childFolder) {
+          html += renderFolderWithChildren(childFolder, level + 1);
+        });
+      }
+      
+      html += '</div>';
+      
+      return html;
+    }
+
+    function renderLinkItem(link) {
+      let html = '<div class="custom-link-item" data-link-id="' + link.id + '">';
+      html += '<div class="custom-link-content">';
+      html += '<a href="' + escapeHtml(link.url) + '" target="_blank">';
+      
+      if (link.faviconUrl) {
+        html += '<img src="' + escapeHtml(link.faviconUrl) + '" class="link-favicon" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'inline-flex\';" alt="" />';
+        html += '<span class="material-icons icon-hidden">' + escapeHtml(link.icon) + '</span>';
+      } else {
+        html += '<span class="material-icons icon-only">' + escapeHtml(link.icon) + '</span>';
+      }
+      
+      html += escapeHtml(link.title);
+      html += '</a>';
+      html += '</div>';
+      html += '<div class="custom-link-actions">';
+      html += '<button class="link-action-btn edit" onclick="editLink(\'' + link.id + '\', \'' + escapeHtml(link.title).replace(/'/g, "\\'") + '\', \'' + escapeHtml(link.url).replace(/'/g, "\\'") + '\', \'' + link.icon + '\', \'' + (link.folderId || '') + '\')" title="編集">';
+      html += '<span class="material-icons">edit</span>';
+      html += '</button>';
+      html += '<button class="link-action-btn delete" onclick="deleteLink(\'' + link.id + '\')" title="削除">';
+      html += '<span class="material-icons">delete</span>';
+      html += '</button>';
+      html += '</div>';
+      html += '</div>';
+      return html;
+    }
+
+    function loadUserLinks() {
+      google.script.run
+        .withSuccessHandler(function(result) {
+          const linksList = document.getElementById('customLinksList');
+          if (!linksList) return;
+          
+          if (!result.success) {
+            linksList.innerHTML = '<p class="no-links-message">リンクの取得に失敗しました</p>';
+            return;
+          }
+          
+          allFolders = result.folders || [];
+          allLinks = result.links || [];
+          
+          allFolders.forEach(function(folder) {
+            if (!(folder.id in collapsedFolders)) {
+              collapsedFolders[folder.id] = true;
+            }
+          });
+          
+          updateFolderSelects();
+          
+          if (allFolders.length === 0 && allLinks.length === 0) {
+            linksList.innerHTML = '<p class="no-links-message">リンクがありません</p>';
+            return;
+          }
+          
+          let linksHTML = '';
+          
+          const topLevelFolders = allFolders.filter(f => !f.parentFolderId);
+          
+          topLevelFolders.forEach(function(folder) {
+            linksHTML += renderFolderWithChildren(folder, 0);
+          });
+          
+          const unfoldered = allLinks.filter(link => !link.folderId);
+          if (unfoldered.length > 0) {
+            linksHTML += '<div class="custom-links-list">';
+            unfoldered.forEach(function(link) {
+              linksHTML += renderLinkItem(link);
+            });
+            linksHTML += '</div>';
+          }
+          
+          linksList.innerHTML = linksHTML;
+        })
+        .withFailureHandler(function(error) {
+          const linksList = document.getElementById('customLinksList');
+          if (linksList) {
+            linksList.innerHTML = '<p class="no-links-message">リンクの取得に失敗しました</p>';
+          }
+        })
+        .getUserLinks();
+    }
+
+    function openReorderModal() {
+      const modal = document.getElementById('reorderModal');
+      const content = document.getElementById('reorderContent');
+      
+      if (modal) modal.style.display = 'block';
+      if (content) {
+        content.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (!result.success) {
+            if (content) {
+              content.innerHTML = '<p class="reorder-empty">データの取得に失敗しました</p>';
+            }
+            return;
+          }
+          
+          allFolders = result.folders || [];
+          allLinks = result.links || [];
+          
+          renderReorderContent();
+        })
+        .withFailureHandler(function(error) {
+          if (content) {
+            content.innerHTML = '<p class="reorder-empty">データの取得に失敗しました</p>';
+          }
+        })
+        .getUserLinks();
+    }
+
+    function renderReorderContent() {
+      const content = document.getElementById('reorderContent');
+      if (!content) return;
+      
+      let html = '';
+      
+      const topLevelFolders = allFolders.filter(f => !f.parentFolderId);
+      if (topLevelFolders.length > 0) {
+        html += '<div class="reorder-section">';
+        html += '<div class="reorder-section-title">';
+        html += '<span class="material-icons">folder</span>';
+        html += 'フォルダの並び替え';
+        html += '</div>';
+        html += '<div class="reorder-list">';
+        
+        topLevelFolders.forEach(function(folder, index) {
+          html += renderReorderFolder(folder, index, topLevelFolders.length, null);
+          
+          const childFolders = allFolders.filter(f => f.parentFolderId === folder.id);
+          childFolders.forEach(function(childFolder, childIndex) {
+            html += renderReorderFolder(childFolder, childIndex, childFolders.length, folder.id, true);
+          });
+        });
+        
+        html += '</div>';
+        html += '</div>';
+      }
+      
+      html += '<div class="reorder-section">';
+      html += '<div class="reorder-section-title">';
+      html += '<span class="material-icons">link</span>';
+      html += 'リンクの並び替え';
+      html += '</div>';
+      
+      const unfoldered = allLinks.filter(link => !link.folderId);
+      if (unfoldered.length > 0) {
+        html += '<div style="margin-bottom: 20px;">';
+        html += '<div style="font-size: 13px; font-weight: 600; color: #9fa8da; margin-bottom: 8px; padding-left: 5px;">フォルダなし</div>';
+        html += '<div class="reorder-list">';
+        unfoldered.forEach(function(link, index) {
+          html += renderReorderLink(link, index, unfoldered.length, null);
+        });
+        html += '</div>';
+        html += '</div>';
+      }
+      
+      allFolders.forEach(function(folder) {
+        const folderLinks = allLinks.filter(link => link.folderId === folder.id);
+        if (folderLinks.length > 0) {
+          html += '<div style="margin-bottom: 20px;">';
+          html += '<div style="font-size: 13px; font-weight: 600; color: ' + folder.color + '; margin-bottom: 8px; padding-left: 5px; display: flex; align-items: center; gap: 6px;">';
+          html += '<span class="material-icons" style="font-size: 18px;">folder</span>';
+          html += escapeHtml(folder.name);
+          html += '</div>';
+          html += '<div class="reorder-list">';
+          folderLinks.forEach(function(link, index) {
+            html += renderReorderLink(link, index, folderLinks.length, folder.id);
+          });
+          html += '</div>';
+          html += '</div>';
+        }
+      });
+      
+      html += '</div>';
+      
+      if (allLinks.length > 0) {
+        html += '<div class="reorder-section folder-move-section">';
+        html += '<div class="reorder-section-title">';
+        html += '<span class="material-icons">drive_file_move</span>';
+        html += 'リンクをフォルダに移動';
+        html += '</div>';
+        
+        allLinks.forEach(function(link) {
+          html += '<div class="folder-move-item">';
+          html += '<div style="flex: 0 0 auto; min-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; color: #e8eaf6;">';
+          html += escapeHtml(link.title);
+          html += '</div>';
+          html += '<select class="folder-move-select" id="moveSelect_' + link.id + '">';
+          html += '<option value="">フォルダなし</option>';
+          allFolders.forEach(function(folder) {
+            const selected = link.folderId === folder.id ? ' selected' : '';
+            html += '<option value="' + folder.id + '"' + selected + '>' + escapeHtml(folder.name) + '</option>';
+          });
+          html += '</select>';
+          html += '<button class="folder-move-btn" onclick="moveLinkToFolderAction(\'' + link.id + '\')">移動</button>';
+          html += '</div>';
+        });
+        
+        html += '</div>';
+      }
+      
+      content.innerHTML = html;
+    }
+
+    function renderReorderFolder(folder, index, total, parentFolderId, isChild) {
+      const indent = isChild ? 'margin-left: 30px;' : '';
+      let html = '<div class="reorder-item" style="' + indent + '">';
+      html += '<div class="reorder-item-content">';
+      html += '<span class="material-icons reorder-item-icon" style="color: ' + folder.color + ';">folder</span>';
+      html += '<span class="reorder-item-text">' + escapeHtml(folder.name) + '</span>';
+      
+      const childCount = allFolders.filter(f => f.parentFolderId === folder.id).length;
+      const linkCount = allLinks.filter(link => link.folderId === folder.id).length;
+      if (childCount > 0 || linkCount > 0) {
+        html += '<span class="reorder-item-badge">';
+        if (childCount > 0) html += childCount + '個のフォルダ ';
+        if (linkCount > 0) html += linkCount + '個のリンク';
+        html += '</span>';
+      }
+      
+      html += '</div>';
+      html += '<div class="reorder-controls">';
+      
+      const disabledTop = index === 0 ? ' disabled' : '';
+      const disabledUp = index === 0 ? ' disabled' : '';
+      const disabledDown = index === total - 1 ? ' disabled' : '';
+      const disabledBottom = index === total - 1 ? ' disabled' : '';
+      
+      html += '<button class="reorder-btn" onclick="moveFolderAction(\'' + folder.id + '\', \'top\', \'' + (parentFolderId || '') + '\')" title="最上部へ"' + disabledTop + '>';
+      html += '<span class="material-icons">vertical_align_top</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveFolderAction(\'' + folder.id + '\', \'up\', \'' + (parentFolderId || '') + '\')" title="上へ"' + disabledUp + '>';
+      html += '<span class="material-icons">keyboard_arrow_up</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveFolderAction(\'' + folder.id + '\', \'down\', \'' + (parentFolderId || '') + '\')" title="下へ"' + disabledDown + '>';
+      html += '<span class="material-icons">keyboard_arrow_down</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveFolderAction(\'' + folder.id + '\', \'bottom\', \'' + (parentFolderId || '') + '\')" title="最下部へ"' + disabledBottom + '>';
+      html += '<span class="material-icons">vertical_align_bottom</span>';
+      html += '</button>';
+      
+      html += '</div>';
+      html += '</div>';
+      
+      return html;
+    }
+
+    function renderReorderLink(link, index, total, folderId) {
+      let html = '<div class="reorder-item">';
+      html += '<div class="reorder-item-content">';
+      
+      if (link.faviconUrl) {
+        html += '<img src="' + escapeHtml(link.faviconUrl) + '" class="link-favicon" style="width: 20px; height: 20px; flex-shrink: 0;" onerror="this.style.display=\'none\';" alt="" />';
+      } else {
+        html += '<span class="material-icons reorder-item-icon" style="color: #667eea;">' + escapeHtml(link.icon) + '</span>';
+      }
+      
+      html += '<span class="reorder-item-text">' + escapeHtml(link.title) + '</span>';
+      html += '</div>';
+      html += '<div class="reorder-controls">';
+      
+      const disabledTop = index === 0 ? ' disabled' : '';
+      const disabledUp = index === 0 ? ' disabled' : '';
+      const disabledDown = index === total - 1 ? ' disabled' : '';
+      const disabledBottom = index === total - 1 ? ' disabled' : '';
+      
+      html += '<button class="reorder-btn" onclick="moveLinkAction(\'' + link.id + '\', \'top\', \'' + (folderId || '') + '\')" title="最上部へ"' + disabledTop + '>';
+      html += '<span class="material-icons">vertical_align_top</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveLinkAction(\'' + link.id + '\', \'up\', \'' + (folderId || '') + '\')" title="上へ"' + disabledUp + '>';
+      html += '<span class="material-icons">keyboard_arrow_up</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveLinkAction(\'' + link.id + '\', \'down\', \'' + (folderId || '') + '\')" title="下へ"' + disabledDown + '>';
+      html += '<span class="material-icons">keyboard_arrow_down</span>';
+      html += '</button>';
+      
+      html += '<button class="reorder-btn" onclick="moveLinkAction(\'' + link.id + '\', \'bottom\', \'' + (folderId || '') + '\')" title="最下部へ"' + disabledBottom + '>';
+      html += '<span class="material-icons">vertical_align_bottom</span>';
+      html += '</button>';
+      
+      html += '</div>';
+      html += '</div>';
+      
+      return html;
+    }
+
+    function moveLinkAction(linkId, direction, folderId) {
+      const content = document.getElementById('reorderContent');
+      if (content) {
+        content.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>移動中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                if (result.success) {
+                  allFolders = result.folders || [];
+                  allLinks = result.links || [];
+                  renderReorderContent();
+                  loadUserLinks();
+                }
+              })
+              .getUserLinks();
+          } else {
+            alert('移動に失敗しました: ' + (result.error || ''));
+            openReorderModal();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('移動に失敗しました');
+          openReorderModal();
+        })
+        .moveLink(linkId, direction, folderId || null);
+    }
+
+    function moveFolderAction(folderId, direction, parentFolderId) {
+      const content = document.getElementById('reorderContent');
+      if (content) {
+        content.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>移動中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                if (result.success) {
+                  allFolders = result.folders || [];
+                  allLinks = result.links || [];
+                  renderReorderContent();
+                  loadUserLinks();
+                }
+              })
+              .getUserLinks();
+          } else {
+            alert('移動に失敗しました: ' + (result.error || ''));
+            openReorderModal();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('移動に失敗しました');
+          openReorderModal();
+        })
+        .moveFolder(folderId, direction, parentFolderId || null);
+    }
+
+    function moveLinkToFolderAction(linkId) {
+      const select = document.getElementById('moveSelect_' + linkId);
+      if (!select) return;
+      
+      const targetFolderId = select.value || null;
+      
+      const content = document.getElementById('reorderContent');
+      if (content) {
+        content.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>移動中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                if (result.success) {
+                  allFolders = result.folders || [];
+                  allLinks = result.links || [];
+                  renderReorderContent();
+                  loadUserLinks();
+                }
+              })
+              .getUserLinks();
+          } else {
+            alert('移動に失敗しました: ' + (result.error || ''));
+            openReorderModal();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('移動に失敗しました');
+          openReorderModal();
+        })
+        .moveLinkToFolder(linkId, targetFolderId);
+    }
+
+    function toggleFolder(folderId) {
+      collapsedFolders[folderId] = !collapsedFolders[folderId];
+      
+      const linksList = document.getElementById('customLinksList');
+      if (!linksList) return;
+      
+      let linksHTML = '';
+      
+      const topLevelFolders = allFolders.filter(f => !f.parentFolderId);
+      
+      topLevelFolders.forEach(function(folder) {
+        linksHTML += renderFolderWithChildren(folder, 0);
+      });
+      
+      const unfoldered = allLinks.filter(link => !link.folderId);
+      if (unfoldered.length > 0) {
+        linksHTML += '<div class="custom-links-list">';
+        unfoldered.forEach(function(link) {
+          linksHTML += renderLinkItem(link);
+        });
+        linksHTML += '</div>';
+      }
+      
+      linksList.innerHTML = linksHTML;
+    }
+
+    function getFolderIndent(folderId) {
+      let indent = '';
+      let currentId = folderId;
+      let level = 0;
+      
+      while (currentId && level < 10) {
+        const folder = allFolders.find(f => f.id === currentId);
+        if (folder && folder.parentFolderId) {
+          indent = '　' + indent;
+          currentId = folder.parentFolderId;
+          level++;
+        } else {
+          break;
+        }
+      }
+      
+      return indent;
+    }
+
+    function updateFolderSelects(excludeFolderId) {
+      const folderSelect = document.getElementById('linkFolderInput');
+      const parentFolderSelect = document.getElementById('folderParentInput');
+      
+      if (folderSelect) {
+        let options = '<option value="">フォルダなし</option>';
+        allFolders.forEach(function(folder) {
+          const indent = getFolderIndent(folder.id);
+          options += '<option value="' + folder.id + '">' + indent + escapeHtml(folder.name) + '</option>';
+        });
+        folderSelect.innerHTML = options;
+      }
+      
+      if (parentFolderSelect) {
+        let options = '<option value="">なし（トップレベル）</option>';
+        allFolders.forEach(function(folder) {
+          if (folder.id !== excludeFolderId) {
+            const indent = getFolderIndent(folder.id);
+            options += '<option value="' + folder.id + '">' + indent + escapeHtml(folder.name) + '</option>';
+          }
+        });
+        parentFolderSelect.innerHTML = options;
+      }
+    }
+
+    loadUserLinks();
+
+    function openLinkModal() {
+      editingLinkId = null;
+      
+      const titleElement = document.getElementById('linkModalTitle');
+      if (titleElement) titleElement.textContent = 'リンクを追加';
+      
+      const titleInput = document.getElementById('linkTitleInput');
+      if (titleInput) titleInput.value = '';
+      
+      const urlInput = document.getElementById('linkUrlInput');
+      if (urlInput) urlInput.value = '';
+      
+      const iconInput = document.getElementById('linkIconInput');
+      if (iconInput) iconInput.value = 'code';
+      
+      const folderInput = document.getElementById('linkFolderInput');
+      if (folderInput) folderInput.value = '';
+      
+      const modal = document.getElementById('linkModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function editLink(linkId, title, url, icon, folderId) {
+      editingLinkId = linkId;
+      
+      const titleElement = document.getElementById('linkModalTitle');
+      if (titleElement) titleElement.textContent = 'リンクを編集';
+      
+      const titleInput = document.getElementById('linkTitleInput');
+      if (titleInput) titleInput.value = title;
+      
+      const urlInput = document.getElementById('linkUrlInput');
+      if (urlInput) urlInput.value = url;
+      
+      const iconInput = document.getElementById('linkIconInput');
+      if (iconInput) iconInput.value = icon;
+      
+      const folderInput = document.getElementById('linkFolderInput');
+      if (folderInput) folderInput.value = folderId || '';
+      
+      const modal = document.getElementById('linkModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function saveLink() {
+      const titleInput = document.getElementById('linkTitleInput');
+      const urlInput = document.getElementById('linkUrlInput');
+      const iconInput = document.getElementById('linkIconInput');
+      const folderInput = document.getElementById('linkFolderInput');
+      
+      const title = titleInput ? titleInput.value.trim() : '';
+      const url = urlInput ? urlInput.value.trim() : '';
+      const icon = iconInput ? iconInput.value : 'code';
+      const folderId = folderInput ? folderInput.value || null : null;
+      
+      if (!title || !url) {
+        alert('タイトルとURLは必須です');
+        return;
+      }
+      
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        alert('URLは http:// または https:// で始まる必要があります');
+        return;
+      }
+      
+      closeModal('linkModal');
+      const linksList = document.getElementById('customLinksList');
+      if (linksList) {
+        linksList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>保存中...</p></div>';
+      }
+      
+      if (editingLinkId) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadUserLinks();
+            } else {
+              alert('リンクの更新に失敗しました');
+              loadUserLinks();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('リンクの更新に失敗しました');
+            loadUserLinks();
+          })
+          .updateUserLink(editingLinkId, title, url, icon, folderId);
+      } else {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadUserLinks();
+            } else {
+              alert('リンクの追加に失敗しました');
+              loadUserLinks();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('リンクの追加に失敗しました');
+            loadUserLinks();
+          })
+          .saveUserLink(title, url, icon, folderId);
+      }
+    }
+
+    function deleteLink(linkId) {
+      if (!confirm('このリンクを削除しますか?')) return;
+      
+      const linksList = document.getElementById('customLinksList');
+      if (linksList) {
+        linksList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>削除中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadUserLinks();
+          } else {
+            alert('リンクの削除に失敗しました');
+            loadUserLinks();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('リンクの削除に失敗しました');
+          loadUserLinks();
+        })
+        .deleteUserLink(linkId);
+    }
+
+    function openFolderModal() {
+      editingFolderId = null;
+      selectedColor = '#667eea';
+      
+      const titleElement = document.getElementById('folderModalTitle');
+      if (titleElement) titleElement.textContent = 'フォルダを追加';
+      
+      const nameInput = document.getElementById('folderNameInput');
+      if (nameInput) nameInput.value = '';
+      
+      const parentFolderInput = document.getElementById('folderParentInput');
+      if (parentFolderInput) parentFolderInput.value = '';
+      
+      updateColorSelection();
+      updateFolderSelects();
+      
+      const modal = document.getElementById('folderModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function editFolder(folderId, name, color, parentFolderId) {
+      editingFolderId = folderId;
+      selectedColor = color;
+      
+      const titleElement = document.getElementById('folderModalTitle');
+      if (titleElement) titleElement.textContent = 'フォルダを編集';
+      
+      const nameInput = document.getElementById('folderNameInput');
+      if (nameInput) nameInput.value = name;
+      
+      updateColorSelection();
+      updateFolderSelects(folderId);
+      
+      const parentFolderInput = document.getElementById('folderParentInput');
+      if (parentFolderInput) {
+        parentFolderInput.value = parentFolderId || '';
+      }
+      
+      const modal = document.getElementById('folderModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function selectColor(color) {
+      selectedColor = color;
+      updateColorSelection();
+    }
+
+    function updateColorSelection() {
+      const colorOptions = document.querySelectorAll('.color-option');
+      colorOptions.forEach(function(option) {
+        if (option.dataset.color === selectedColor) {
+          option.classList.add('selected');
+        } else {
+          option.classList.remove('selected');
+        }
+      });
+    }
+
+    function saveFolder() {
+      const nameInput = document.getElementById('folderNameInput');
+      const parentFolderInput = document.getElementById('folderParentInput');
+      
+      const name = nameInput ? nameInput.value.trim() : '';
+      const parentFolderId = parentFolderInput ? (parentFolderInput.value || null) : null;
+      
+      if (!name) {
+        alert('フォルダ名を入力してください');
+        return;
+      }
+      
+      closeModal('folderModal');
+      const linksList = document.getElementById('customLinksList');
+      if (linksList) {
+        linksList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>保存中...</p></div>';
+      }
+      
+      if (editingFolderId) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadUserLinks();
+            } else {
+              alert(result.error || 'フォルダの更新に失敗しました');
+              loadUserLinks();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('フォルダの更新に失敗しました');
+            loadUserLinks();
+          })
+          .updateUserFolder(editingFolderId, name, selectedColor, parentFolderId);
+      } else {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadUserLinks();
+            } else {
+              alert('フォルダの追加に失敗しました');
+              loadUserLinks();
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('フォルダの追加に失敗しました');
+            loadUserLinks();
+          })
+          .saveUserFolder(name, selectedColor, parentFolderId);
+      }
+    }
+
+    function deleteFolder(folderId) {
+      if (!confirm('このフォルダを削除しますか？\n（フォルダ内のリンクは「フォルダなし」に移動されます）')) return;
+      
+      const linksList = document.getElementById('customLinksList');
+      if (linksList) {
+        linksList.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>削除中...</p></div>';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            delete collapsedFolders[folderId];
+            loadUserLinks();
+          } else {
+            alert('フォルダの削除に失敗しました');
+            loadUserLinks();
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('フォルダの削除に失敗しました');
+          loadUserLinks();
+        })
+        .deleteUserFolder(folderId);
+    }
+
+    function renderCalendar() {
+      const firstDay = new Date(currentYear, currentMonth - 1, 1);
+      const lastDay = new Date(currentYear, currentMonth, 0);
+      const prevLastDay = new Date(currentYear, currentMonth - 1, 0);
+      
+      const firstDayOfWeek = firstDay.getDay();
+      const lastDate = lastDay.getDate();
+      const prevLastDate = prevLastDay.getDate();
+      
+      const monthElement = document.getElementById('calendarMonth');
+      if (monthElement) {
+        monthElement.textContent = currentYear + '年' + currentMonth + '月';
+      }
+      
+      let calendarHTML = '';
+      const dayHeaders = ['日', '月', '火', '水', '木', '金', '土'];
+      dayHeaders.forEach(function(day) {
+        calendarHTML += '<div class="calendar-day-header">' + day + '</div>';
+      });
+      
+      for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const day = prevLastDate - i;
+        calendarHTML += '<div class="calendar-day other-month">' + day + '</div>';
+      }
+      
+      const today = new Date();
+      for (let day = 1; day <= lastDate; day++) {
+        const dateStr = currentYear + '-' + String(currentMonth).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        const isToday = (currentYear === today.getFullYear() && 
+                        currentMonth === today.getMonth() + 1 && 
+                        day === today.getDate());
+        const hasEvents = eventDatesData[dateStr] > 0;
+        
+        let classes = 'calendar-day';
+        if (isToday) classes += ' today';
+        if (hasEvents) classes += ' has-events';
+        
+        calendarHTML += '<div class="' + classes + '" onclick="showDayEvents(\'' + dateStr + '\')">' + day + '</div>';
+      }
+      
+      const remainingDays = 42 - (firstDayOfWeek + lastDate);
+      for (let day = 1; day <= remainingDays; day++) {
+        calendarHTML += '<div class="calendar-day other-month">' + day + '</div>';
+      }
+      
+      const gridElement = document.getElementById('calendarGrid');
+      if (gridElement) {
+        gridElement.innerHTML = calendarHTML;
+      }
+    }
+
+    function loadMonthEvents() {
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (data.success) {
+            eventDatesData = data.eventDates;
+            renderCalendar();
+          }
+        })
+        .getMonthEvents(currentYear, currentMonth);
+    }
+
+    function changeMonth(delta) {
+      currentMonth += delta;
+      if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear++;
+      } else if (currentMonth < 1) {
+        currentMonth = 12;
+        currentYear--;
+      }
+      loadMonthEvents();
+    }
+
+    function goToToday() {
+      const today = new Date();
+      currentYear = today.getFullYear();
+      currentMonth = today.getMonth() + 1;
+      loadMonthEvents();
+    }
+
+    loadMonthEvents();
+    calendarRefreshInterval = setInterval(function() {
+      loadMonthEvents();
+    }, 60000);
+
+    function showDayEvents(dateStr) {
+      currentEventDate = dateStr;
+      const modal = document.getElementById('eventModal');
+      const modalBody = document.getElementById('eventModalBody');
+      const addBtn = document.getElementById('addEventFromDateBtn');
+      
+      const date = new Date(dateStr + 'T00:00:00');
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+      const weekday = weekdays[date.getDay()];
+      
+      const titleElement = document.getElementById('eventModalTitle');
+      if (titleElement) {
+        titleElement.textContent = year + '年' + month + '月' + day + '日 (' + weekday + ') の予定';
+      }
+      
+      if (modalBody) {
+        modalBody.innerHTML = '<div class="loading-spinner"><div class="spinner"></div><p>読み込み中...</p></div>';
+      }
+      
+      if (addBtn) {
+        addBtn.style.display = 'flex';
+      }
+      
+      if (modal) {
+        modal.style.display = 'block';
+      }
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (!data.success) {
+            if (modalBody) {
+              modalBody.innerHTML = '<p class="no-events">予定の取得に失敗しました</p>';
+            }
+            return;
+          }
+          
+          if (data.events && data.events.length > 0) {
+            let eventsHTML = '';
+            
+            data.events.forEach(function(event) {
+              const startTime = new Date(event.startTime);
+              const endTime = new Date(event.endTime);
+              
+              let timeStr = '';
+              if (event.isAllDay) {
+                timeStr = '終日';
+              } else {
+                timeStr = String(startTime.getHours()).padStart(2, '0') + ':' + 
+                         String(startTime.getMinutes()).padStart(2, '0') + ' - ' +
+                         String(endTime.getHours()).padStart(2, '0') + ':' + 
+                         String(endTime.getMinutes()).padStart(2, '0');
+              }
+              
+              let clickHandler = '';
+              if (event.isTodo) {
+                clickHandler = 'onclick="editTodoFromCalendar(\'' + event.taskId + '\', \'' + event.taskListId + '\', \'' + escapeHtml(event.title.replace('📋 ', '')).replace(/'/g, "\\'") + '\', \'' + (event.taskDue || '') + '\', \'' + escapeHtml(event.description || '').replace(/'/g, "\\'") + '\')"';
+              } else if (event.canEdit) {
+                clickHandler = 'onclick="editEvent(\'' + event.id + '\')"';
+              }
+              
+              const itemClass = event.isTodo ? 'event-item todo-event' : 'event-item';
+              
+              eventsHTML += '<div class="' + itemClass + '" ' + clickHandler + '>';
+              eventsHTML += '<div class="event-time">' + timeStr + '</div>';
+              eventsHTML += '<div class="event-title">' + escapeHtml(event.title) + '</div>';
+              if (event.location) {
+                eventsHTML += '<div class="event-details">📍 ' + escapeHtml(event.location) + '</div>';
+              }
+              if (event.description) {
+                eventsHTML += '<div class="event-details">' + escapeHtml(event.description.substring(0, 100)) + '</div>';
+              }
+              eventsHTML += '<div class="event-details" style="margin-top: 5px; color: #7F8C8D;">📅 ' + escapeHtml(event.calendarName) + '</div>';
+              eventsHTML += '</div>';
+            });
+            
+            if (modalBody) {
+              modalBody.innerHTML = eventsHTML;
+            }
+          } else {
+            if (modalBody) {
+              modalBody.innerHTML = '<p class="no-events">この日の予定はありません</p>';
+            }
+          }
+        })
+        .withFailureHandler(function(error) {
+          if (modalBody) {
+            modalBody.innerHTML = '<p class="no-events">予定の取得に失敗しました</p>';
+          }
+        })
+        .getCalendarEvents(dateStr);
+    }
+
+    function openEventModalFromDate() {
+      closeModal('eventModal');
+      
+      editingEventId = null;
+      const titleElement = document.getElementById('eventEditModalTitle');
+      if (titleElement) titleElement.textContent = '予定を追加';
+      
+      const titleInput = document.getElementById('eventTitleInput');
+      if (titleInput) titleInput.value = '';
+      
+      const locationInput = document.getElementById('eventLocationInput');
+      if (locationInput) locationInput.value = '';
+      
+      const descriptionInput = document.getElementById('eventDescriptionInput');
+      if (descriptionInput) descriptionInput.value = '';
+      
+      const allDayCheckbox = document.getElementById('eventAllDayCheckbox');
+      if (allDayCheckbox) allDayCheckbox.checked = false;
+      
+      const dateTimeRow = document.getElementById('eventDateTimeRow');
+      if (dateTimeRow) dateTimeRow.style.display = 'grid';
+      
+      const dateRow = document.getElementById('eventDateRow');
+      if (dateRow) dateRow.style.display = 'none';
+      
+      const deleteBtn = document.getElementById('deleteEventBtn');
+      if (deleteBtn) deleteBtn.style.display = 'none';
+      
+      if (currentEventDate) {
+        const now = new Date();
+        const roundedHour = Math.ceil(now.getHours());
+        const roundedMinutes = now.getMinutes() > 30 ? '30' : '00';
+        
+        let startHour = roundedHour;
+        let startMinutes = roundedMinutes;
+        
+        if (roundedMinutes === '30') {
+          startMinutes = '30';
+        } else if (now.getMinutes() > 0) {
+          startHour = (roundedHour + 1) % 24;
+          startMinutes = '00';
+        }
+        
+        const startTime = String(startHour).padStart(2, '0') + ':' + startMinutes;
+        
+        let endHour = startHour;
+        let endMinutes = parseInt(startMinutes) + 30;
+        if (endMinutes >= 60) {
+          endHour = (endHour + 1) % 24;
+          endMinutes = endMinutes - 60;
+        }
+        
+        const endTime = String(endHour).padStart(2, '0') + ':' + String(endMinutes).padStart(2, '0');
+        
+        const startDateTime = currentEventDate + 'T' + startTime;
+        const endDateTime = currentEventDate + 'T' + endTime;
+        
+        const startInput = document.getElementById('eventStartInput');
+        if (startInput) startInput.value = startDateTime;
+        
+        const endInput = document.getElementById('eventEndInput');
+        if (endInput) endInput.value = endDateTime;
+      }
+      
+      const modal = document.getElementById('eventEditModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function editTodoFromCalendar(taskId, listId, title, dueDate, notes) {
+      closeModal('eventModal');
+      
+      editingTodoId = taskId;
+      editingTodoListId = listId;
+      
+      const titleElement = document.getElementById('todoModalTitle');
+      if (titleElement) titleElement.textContent = 'タスク編集';
+      
+      const titleInput = document.getElementById('todoTitleInput');
+      if (titleInput) titleInput.value = title;
+      
+      const notesInput = document.getElementById('todoNotesInput');
+      if (notesInput) notesInput.value = notes || '';
+      
+      if (dueDate) {
+        const date = new Date(dueDate);
+        const dateStr = date.getFullYear() + '-' + 
+                       String(date.getMonth() + 1).padStart(2, '0') + '-' + 
+                       String(date.getDate()).padStart(2, '0');
+        const dueDateInput = document.getElementById('todoDueDateInput');
+        if (dueDateInput) dueDateInput.value = dateStr;
+      } else {
+        const dueDateInput = document.getElementById('todoDueDateInput');
+        if (dueDateInput) dueDateInput.value = '';
+      }
+      
+      const modal = document.getElementById('todoModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function openEventModal() {
+      editingEventId = null;
+      
+      const titleElement = document.getElementById('eventEditModalTitle');
+      if (titleElement) titleElement.textContent = '予定を追加';
+      
+      const titleInput = document.getElementById('eventTitleInput');
+      if (titleInput) titleInput.value = '';
+      
+      const locationInput = document.getElementById('eventLocationInput');
+      if (locationInput) locationInput.value = '';
+      
+      const descriptionInput = document.getElementById('eventDescriptionInput');
+      if (descriptionInput) descriptionInput.value = '';
+      
+      const allDayCheckbox = document.getElementById('eventAllDayCheckbox');
+      if (allDayCheckbox) allDayCheckbox.checked = false;
+      
+      const dateTimeRow = document.getElementById('eventDateTimeRow');
+      if (dateTimeRow) dateTimeRow.style.display = 'grid';
+      
+      const dateRow = document.getElementById('eventDateRow');
+      if (dateRow) dateRow.style.display = 'none';
+      
+      const deleteBtn = document.getElementById('deleteEventBtn');
+      if (deleteBtn) deleteBtn.style.display = 'none';
+      
+      const now = new Date();
+      const roundedHour = Math.ceil(now.getHours());
+      const roundedMinutes = now.getMinutes() > 30 ? '30' : '00';
+      
+      let startHour = roundedHour;
+      let startMinutes = roundedMinutes;
+      
+      if (roundedMinutes === '30') {
+        startMinutes = '30';
+      } else if (now.getMinutes() > 0) {
+        startHour = (roundedHour + 1) % 24;
+        startMinutes = '00';
+      }
+      
+      const startTime = String(startHour).padStart(2, '0') + ':' + startMinutes;
+      
+      let endHour = startHour;
+      let endMinutes = parseInt(startMinutes) + 30;
+      if (endMinutes >= 60) {
+        endHour = (endHour + 1) % 24;
+        endMinutes = endMinutes - 60;
+      }
+      
+      const endTime = String(endHour).padStart(2, '0') + ':' + String(endMinutes).padStart(2, '0');
+      
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      
+      const startDateTime = year + '-' + month + '-' + day + 'T' + startTime;
+      const endDateTime = year + '-' + month + '-' + day + 'T' + endTime;
+      
+      const startInput = document.getElementById('eventStartInput');
+      if (startInput) startInput.value = startDateTime;
+      
+      const endInput = document.getElementById('eventEndInput');
+      if (endInput) endInput.value = endDateTime;
+      
+      const modal = document.getElementById('eventEditModal');
+      if (modal) modal.style.display = 'block';
+    }
+
+    function toggleAllDay() {
+      const isAllDay = document.getElementById('eventAllDayCheckbox');
+      const dateTimeRow = document.getElementById('eventDateTimeRow');
+      const dateRow = document.getElementById('eventDateRow');
+      
+      if (!isAllDay || !dateTimeRow || !dateRow) return;
+      
+      if (isAllDay.checked) {
+        dateTimeRow.style.display = 'none';
+        dateRow.style.display = 'grid';
+        
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        const startDateInput = document.getElementById('eventStartDateInput');
+        const endDateInput = document.getElementById('eventEndDateInput');
+        
+        if (startInput && startInput.value && startDateInput) {
+          startDateInput.value = startInput.value.split('T')[0];
+        }
+        if (endInput && endInput.value && endDateInput) {
+          endDateInput.value = endInput.value.split('T')[0];
+        }
+      } else {
+        dateTimeRow.style.display = 'grid';
+        dateRow.style.display = 'none';
+        
+        const startDateInput = document.getElementById('eventStartDateInput');
+        const endDateInput = document.getElementById('eventEndDateInput');
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        
+        if (startDateInput && startDateInput.value && startInput) {
+          startInput.value = startDateInput.value + 'T09:00';
+        }
+        if (endDateInput && endDateInput.value && endInput) {
+          endInput.value = endDateInput.value + 'T10:00';
+        }
+      }
+    }
+
+    function editEvent(eventId) {
+      closeModal('eventModal');
+      
+      google.script.run
+        .withSuccessHandler(function(data) {
+          if (!data.success || !data.events || data.events.length === 0) {
+            alert('予定の取得に失敗しました');
+            return;
+          }
+          
+          const event = data.events.find(e => e.id === eventId);
+          if (!event || event.isTodo) {
+            alert('予定が見つかりません');
+            return;
+          }
+          
+          editingEventId = eventId;
+          
+          const titleElement = document.getElementById('eventEditModalTitle');
+          if (titleElement) titleElement.textContent = '予定を編集';
+          
+          const titleInput = document.getElementById('eventTitleInput');
+          if (titleInput) titleInput.value = event.title;
+          
+          const locationInput = document.getElementById('eventLocationInput');
+          if (locationInput) locationInput.value = event.location || '';
+          
+          const descriptionInput = document.getElementById('eventDescriptionInput');
+          if (descriptionInput) descriptionInput.value = event.description || '';
+          
+          const startDate = new Date(event.startTime);
+          const endDate = new Date(event.endTime);
+          
+          const allDayCheckbox = document.getElementById('eventAllDayCheckbox');
+          const dateTimeRow = document.getElementById('eventDateTimeRow');
+          const dateRow = document.getElementById('eventDateRow');
+          
+          if (event.isAllDay) {
+            if (allDayCheckbox) allDayCheckbox.checked = true;
+            if (dateTimeRow) dateTimeRow.style.display = 'none';
+            if (dateRow) dateRow.style.display = 'grid';
+            
+            const startDateInput = document.getElementById('eventStartDateInput');
+            if (startDateInput) startDateInput.value = formatDateOnly(startDate);
+            
+            const endDateInput = document.getElementById('eventEndDateInput');
+            if (endDateInput) endDateInput.value = formatDateOnly(endDate);
+          } else {
+            if (allDayCheckbox) allDayCheckbox.checked = false;
+            if (dateTimeRow) dateTimeRow.style.display = 'grid';
+            if (dateRow) dateRow.style.display = 'none';
+            
+            const startInput = document.getElementById('eventStartInput');
+            if (startInput) startInput.value = formatDateTimeLocal(startDate);
+            
+            const endInput = document.getElementById('eventEndInput');
+            if (endInput) endInput.value = formatDateTimeLocal(endDate);
+          }
+          
+          const deleteBtn = document.getElementById('deleteEventBtn');
+          if (deleteBtn) deleteBtn.style.display = 'flex';
+          
+          const modal = document.getElementById('eventEditModal');
+          if (modal) modal.style.display = 'block';
+        })
+        .getCalendarEvents(currentEventDate);
+    }
+
+    function saveEvent() {
+      const titleInput = document.getElementById('eventTitleInput');
+      const locationInput = document.getElementById('eventLocationInput');
+      const descriptionInput = document.getElementById('eventDescriptionInput');
+      const allDayCheckbox = document.getElementById('eventAllDayCheckbox');
+      
+      const title = titleInput ? titleInput.value.trim() : '';
+      const location = locationInput ? locationInput.value.trim() : '';
+      const description = descriptionInput ? descriptionInput.value.trim() : '';
+      const isAllDay = allDayCheckbox ? allDayCheckbox.checked : false;
+      
+      let startTime, endTime;
+      
+      if (isAllDay) {
+        const startDateInput = document.getElementById('eventStartDateInput');
+        const endDateInput = document.getElementById('eventEndDateInput');
+        
+        const startDate = startDateInput ? startDateInput.value : '';
+        const endDate = endDateInput ? endDateInput.value : '';
+        
+        if (!title || !startDate || !endDate) {
+          alert('タイトル、開始日、終了日は必須です');
+          return;
+        }
+        
+        startTime = startDate + 'T00:00:00';
+        const endDateObj = new Date(endDate);
+        endDateObj.setDate(endDateObj.getDate() + 1);
+        endTime = formatDateOnly(endDateObj) + 'T00:00:00';
+      } else {
+        const startInput = document.getElementById('eventStartInput');
+        const endInput = document.getElementById('eventEndInput');
+        
+        startTime = startInput ? startInput.value : '';
+        endTime = endInput ? endInput.value : '';
+        
+        if (!title || !startTime || !endTime) {
+          alert('タイトル、開始日時、終了日時は必須です');
+          return;
+        }
+      }
+      
+      closeModal('eventEditModal');
+      
+      if (editingEventId) {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadMonthEvents();
+              updateSummaryDashboard();
+              if (currentEventDate) {
+                showDayEvents(currentEventDate);
+              }
+            } else {
+              alert('予定の更新に失敗しました');
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('予定の更新に失敗しました');
+          })
+          .updateCalendarEvent(editingEventId, title, startTime, endTime, description, location);
+      } else {
+        google.script.run
+          .withSuccessHandler(function(result) {
+            if (result.success) {
+              loadMonthEvents();
+              updateSummaryDashboard();
+            } else {
+              alert('予定の追加に失敗しました');
+            }
+          })
+          .withFailureHandler(function(error) {
+            alert('予定の追加に失敗しました');
+          })
+          .addCalendarEvent(title, startTime, endTime, description, location);
+      }
+    }
+
+    function deleteEvent() {
+      if (!confirm('この予定を削除しますか?')) return;
+      
+      closeModal('eventEditModal');
+      
+      google.script.run
+        .withSuccessHandler(function(result) {
+          if (result.success) {
+            loadMonthEvents();
+            updateSummaryDashboard();
+            if (currentEventDate) {
+              showDayEvents(currentEventDate);
+            }
+          } else {
+            alert('予定の削除に失敗しました');
+          }
+        })
+        .withFailureHandler(function(error) {
+          alert('予定の削除に失敗しました');
+        })
+        .deleteCalendarEvent(editingEventId);
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.style.display = 'none';
+      }
+      
+      if (modalId === 'eventModal') {
+        const addBtn = document.getElementById('addEventFromDateBtn');
+        if (addBtn) {
+          addBtn.style.display = 'none';
+        }
+      }
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = 'none';
+        
+        if (event.target.id === 'eventModal') {
+          const addBtn = document.getElementById('addEventFromDateBtn');
+          if (addBtn) {
+            addBtn.style.display = 'none';
+          }
+        }
+      }
+    };
+
+    function formatEmailDate(date) {
+      const now = new Date();
+      const diff = now - date;
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (hours < 24) {
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+        return month + '/' + day + ' ' + hour + ':' + minute;
+      }
+
+      if (days < 7) {
+        return days + '日前';
+      }
+
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return month + '/' + day;
+    }
+
+    function formatRelativeTime(date) {
+      const now = new Date();
+      const diff = now - date;
+      const minutes = Math.floor(diff / 60000);
+
+      if (minutes < 1) {
+        return 'たった今';
+      }
+
+      if (minutes < 60) {
+        return minutes + '分前';
+      }
+
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) {
+        return hours + '時間前';
+      }
+
+      const days = Math.floor(hours / 24);
+      if (days < 7) {
+        return days + '日前';
+      }
+
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return month + '/' + day;
+    }
+
+    function formatTodoDate(date) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      return year + '/' + month + '/' + day;
+    }
+
+    function formatDateTimeLocal(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+    }
+
+    function formatDateOnly(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return year + '-' + month + '-' + day;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function truncateText(text, maxLength) {
+      if (!text) return '';
+      if (text.length <= maxLength) {
+        return text;
+      }
+      return text.substring(0, maxLength) + '…';
+    }
+
+    window.addEventListener('beforeunload', function() {
+      if (emailRefreshInterval) clearInterval(emailRefreshInterval);
+      if (chatRefreshInterval) clearInterval(chatRefreshInterval);
+      if (calendarRefreshInterval) clearInterval(calendarRefreshInterval);
+      if (summaryRefreshInterval) clearInterval(summaryRefreshInterval);
+    });
+  </script>
+</body>
+</html>
