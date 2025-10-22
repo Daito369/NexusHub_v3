@@ -1,10 +1,12 @@
+const FAVICON_DATA_URL = 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%25%22%20stop-color%3D%22%234285F4%22/%3E%3Cstop%20offset%3D%2250%25%22%20stop-color%3D%22%2334A853%22/%3E%3Cstop%20offset%3D%22100%25%22%20stop-color%3D%22%23FBBC04%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23202124%22/%3E%3Cpath%20fill%3D%22url%28%23g%29%22%20d%3D%22M14%2016h10l16%2026V16h10v32h-10L24%2022v26H14z%22/%3E%3C/svg%3E';
+
 function doGet(e) {
   const page = e && e.parameter && e.parameter.page ? e.parameter.page : '';
   const templateName = page === 'timer' ? 'Timer' : 'Index';
 
   return HtmlService.createHtmlOutputFromFile(templateName)
     .setTitle('NexusHub - 統合ワークスペースポータル')
-    .setFaviconUrl('https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png');
+    .setFaviconUrl(FAVICON_DATA_URL);
 }
 
 function getUserInfo() {
@@ -93,107 +95,292 @@ function getGmailData() {
   }
 }
 
+function parseDisplayName(raw) {
+  if (!raw) return '';
+  let value = raw;
+  const nameMatch = raw.match(/^"?([^"<]+)"?\s*</);
+  if (nameMatch) {
+    value = nameMatch[1].trim();
+  } else {
+    const emailMatch = raw.match(/<([^>]+)>/);
+    if (emailMatch) {
+      value = emailMatch[1];
+    } else {
+      value = raw.trim();
+    }
+  }
+  return value;
+}
+
+function classifyChatConversation(options) {
+  const spaceType = (options.spaceType || '').toLowerCase();
+  if (spaceType.indexOf('space') !== -1 || spaceType.indexOf('room') !== -1) {
+    return 'space';
+  }
+  if (spaceType.indexOf('direct') !== -1) {
+    return 'direct';
+  }
+
+  const permalink = (options.permalink || '').toLowerCase();
+  if (permalink.indexOf('/room/') !== -1 || permalink.indexOf('/space/') !== -1) {
+    return 'space';
+  }
+  if (permalink.indexOf('/dm/') !== -1) {
+    return 'direct';
+  }
+
+  const listId = (options.listId || '').toLowerCase();
+  if (listId.indexOf('space') !== -1 || listId.indexOf('group') !== -1 || listId.indexOf('rooms') !== -1) {
+    return 'space';
+  }
+  if (listId.indexOf('dm-') !== -1) {
+    return 'direct';
+  }
+
+  const authorEmail = (options.authorEmail || '').toLowerCase();
+  if (authorEmail.indexOf('chat.google.com') !== -1) {
+    return 'space';
+  }
+
+  const subject = (options.subject || '').toLowerCase();
+  if (subject.indexOf('space') !== -1 || subject.indexOf('スペース') !== -1) {
+    return 'space';
+  }
+
+  return 'direct';
+}
+
+function buildHeaderMap(headers) {
+  const map = {};
+  if (!headers) {
+    return map;
+  }
+  headers.forEach(function(header) {
+    if (!header || !header.name) return;
+    map[header.name.toLowerCase()] = header.value;
+  });
+  return map;
+}
+
+function buildConversationFromGmailApiThread(threadDetail) {
+  if (!threadDetail || !threadDetail.messages || threadDetail.messages.length === 0) {
+    return null;
+  }
+
+  const messages = threadDetail.messages;
+  const latestMessage = messages[messages.length - 1];
+  const headerMap = buildHeaderMap(latestMessage.payload ? latestMessage.payload.headers : null);
+  const rawAuthor = headerMap['x-google-original-from'] || headerMap['from'] || '';
+  const author = parseDisplayName(rawAuthor) || 'メンバー';
+  const authorEmailMatch = rawAuthor.match(/<([^>]+)>/);
+  const authorEmail = authorEmailMatch ? authorEmailMatch[1] : rawAuthor;
+
+  const topic = headerMap['x-google-chat-thread-topic'] || headerMap['x-google-chat-threadtopic'] || '';
+  const subject = headerMap['subject'] || topic || author || 'チャット';
+  const snippetSource = (latestMessage.snippet || threadDetail.snippet || '').replace(/\s+/g, ' ').trim();
+  const preview = snippetSource.length > 0 ? (snippetSource.length > 140 ? snippetSource.substring(0, 140) + '…' : snippetSource) : 'メッセージを取得できませんでした';
+
+  let permalink = '';
+  try {
+    permalink = GmailApp.getThreadById(threadDetail.id).getPermalink();
+  } catch (error) {
+    permalink = '';
+  }
+
+  const classification = classifyChatConversation({
+    spaceType: headerMap['x-google-chat-spacetype'] || headerMap['x-google-chat-space-type'] || '',
+    listId: headerMap['list-id'] || '',
+    subject: subject,
+    authorEmail: authorEmail,
+    permalink: permalink
+  });
+
+  const lastUpdated = latestMessage.internalDate ? Number(latestMessage.internalDate) : Date.now();
+
+  return {
+    classification: classification,
+    conversation: {
+      title: subject && subject.trim() ? subject.trim() : author || 'チャット',
+      author: author || 'メンバー',
+      preview: preview,
+      lastUpdated: lastUpdated,
+      permalink: permalink
+    }
+  };
+}
+
+function buildConversationFromGmailThread(thread) {
+  if (!thread) {
+    return null;
+  }
+
+  const messages = thread.getMessages();
+  if (!messages || messages.length === 0) {
+    return null;
+  }
+
+  const latestMessage = messages[messages.length - 1];
+  const rawAuthor = (function() {
+    try {
+      return latestMessage.getFrom() || '';
+    } catch (error) {
+      return '';
+    }
+  })();
+
+  const author = parseDisplayName(rawAuthor) || 'メンバー';
+  const authorEmailMatch = rawAuthor.match(/<([^>]+)>/);
+  const authorEmail = authorEmailMatch ? authorEmailMatch[1] : rawAuthor;
+
+  let title = '';
+  try {
+    title = thread.getFirstMessageSubject() || '';
+  } catch (error) {
+    title = '';
+  }
+  if (!title || title.trim() === '') {
+    title = author || 'チャット';
+  }
+
+  let preview = '';
+  try {
+    preview = (latestMessage.getPlainBody() || '').replace(/\s+/g, ' ').trim();
+  } catch (error) {
+    preview = '';
+  }
+
+  if (!preview) {
+    try {
+      const htmlBody = latestMessage.getBody();
+      preview = htmlBody ? htmlBody.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : '';
+    } catch (error) {
+      preview = '';
+    }
+  }
+
+  if (!preview) {
+    preview = 'メッセージを取得できませんでした';
+  } else if (preview.length > 140) {
+    preview = preview.substring(0, 140) + '…';
+  }
+
+  let permalink = '';
+  try {
+    permalink = thread.getPermalink();
+  } catch (error) {
+    permalink = '';
+  }
+
+  const classification = classifyChatConversation({
+    spaceType: '',
+    listId: '',
+    subject: title,
+    authorEmail: authorEmail,
+    permalink: permalink
+  });
+
+  return {
+    classification: classification,
+    conversation: {
+      title: title,
+      author: author,
+      preview: preview,
+      lastUpdated: latestMessage.getDate().getTime(),
+      permalink: permalink
+    }
+  };
+}
+
+function fetchUnreadChatThreads(limit) {
+  const maxResults = Math.min(Math.max(limit || 50, 1), 100);
+
+  if (typeof Gmail !== 'undefined' && Gmail.Users && Gmail.Users.Threads) {
+    try {
+      const listResponse = Gmail.Users.Threads.list('me', {
+        q: 'label:chat label:unread',
+        maxResults: maxResults
+      });
+
+      if (listResponse && listResponse.threads && listResponse.threads.length > 0) {
+        const threadDetails = [];
+        listResponse.threads.forEach(function(threadSummary) {
+          try {
+            const detail = Gmail.Users.Threads.get('me', threadSummary.id, {
+              format: 'metadata',
+              metadataHeaders: ['Subject', 'From', 'Date', 'X-Google-Original-From', 'X-Google-Chat-SpaceType', 'X-Google-Chat-Space-Type', 'X-Google-Chat-Thread-Topic', 'List-Id']
+            });
+            if (detail) {
+              threadDetails.push(detail);
+            }
+          } catch (threadError) {
+            Logger.log('Failed to resolve chat thread detail for ' + threadSummary.id + ': ' + threadError.toString());
+          }
+        });
+
+        return {
+          source: 'gmailApi',
+          threads: threadDetails
+        };
+      }
+    } catch (error) {
+      Logger.log('Gmail advanced service failed for chat fetch: ' + error.toString());
+    }
+  }
+
+  try {
+    const fallbackThreads = GmailApp.search('in:chats is:unread', 0, maxResults);
+    return {
+      source: 'gmailApp',
+      threads: fallbackThreads
+    };
+  } catch (error) {
+    Logger.log('GmailApp fallback for chat fetch failed: ' + error.toString());
+    throw error;
+  }
+}
+
 function getChatData() {
   var directMessages = [];
   var spaceMessages = [];
 
   try {
-    const unreadChatThreads = GmailApp.search('in:chats is:unread', 0, 50);
+    const response = fetchUnreadChatThreads(60);
+    const threads = response.threads || [];
 
-    for (let i = 0; i < unreadChatThreads.length; i++) {
-      const thread = unreadChatThreads[i];
-      const messages = thread.getMessages();
-      if (!messages || messages.length === 0) {
-        Logger.log('Thread index ' + i + ' contains no messages; skipping.');
-        continue; // ← for 内なのでOK
-      }
+    threads.forEach(function(thread) {
+      let parsed = null;
 
-      const latestMessage = messages[messages.length - 1];
-
-      // 作者名の抽出
-      let author = '';
-      try {
-        author = latestMessage.getFrom() || '';
-      } catch (e) {
-        author = '';
-      }
-      if (author) {
-        const nameMatch = author.match(/^"?([^"<]+)"?\s*</);
-        if (nameMatch) {
-          author = nameMatch[1].trim();
-        } else {
-          const emailMatch = author.match(/<([^>]+)>/);
-          if (emailMatch) author = emailMatch[1];
-        }
-      }
-
-      // タイトル
-      let title = thread.getFirstMessageSubject();
-      if (!title || title.trim() === '') title = author || 'チャット';
-
-      // プレビュー
-      let preview = '';
-      try {
-        const body = latestMessage.getPlainBody();
-        preview = (body || '').replace(/\s+/g, ' ').trim();
-        if (preview.length > 140) preview = preview.substring(0, 140) + '…';
-      } catch (e) {
-        preview = 'メッセージを取得できませんでした';
-      }
-
-      // パーマリンク
-      let permalink = '';
-      try {
-        permalink = thread.getPermalink();
-      } catch (e) {
-        permalink = '';
-      }
-
-      // DM / スペース判定
-      const classification = (function () {
-        const normalizedPermalink = (permalink || '').toLowerCase();
-        if (normalizedPermalink.indexOf('/dm/') !== -1) return 'direct';
-        if (normalizedPermalink.indexOf('/room/') !== -1 || normalizedPermalink.indexOf('/space/') !== -1) return 'space';
-
-        const authorAddressMatch = (latestMessage.getFrom() || '').match(/<([^>]+)>/);
-        const authorAddress = authorAddressMatch ? authorAddressMatch[1] : '';
-        if (/chat\.google\.com/i.test(authorAddress)) return 'space';
-
-        const subject = thread.getFirstMessageSubject() || '';
-        if (/space|スペース/i.test(subject)) return 'space';
-
-        return 'direct';
-      })();
-
-      const conversation = {
-        title: title || 'チャット',
-        author: author || 'メンバー',
-        preview: preview,
-        lastUpdated: latestMessage.getDate().getTime(),
-        permalink: permalink
-      };
-
-      if (classification === 'space') {
-        spaceMessages.push(conversation);
+      if (response.source === 'gmailApi') {
+        parsed = buildConversationFromGmailApiThread(thread);
       } else {
-        directMessages.push(conversation);
+        parsed = buildConversationFromGmailThread(thread);
       }
-    }
 
-    // 並び替え
-    directMessages.sort((a, b) => b.lastUpdated - a.lastUpdated);
-    spaceMessages.sort((a, b) => b.lastUpdated - a.lastUpdated);
-    const combined = directMessages.concat(spaceMessages).sort((a, b) => b.lastUpdated - a.lastUpdated);
+      if (!parsed || !parsed.conversation) {
+        return;
+      }
 
-    // フロント側が期待する形で返す
+      if (parsed.classification === 'space') {
+        spaceMessages.push(parsed.conversation);
+      } else {
+        directMessages.push(parsed.conversation);
+      }
+    });
+
+    directMessages.sort(function(a, b) { return b.lastUpdated - a.lastUpdated; });
+    spaceMessages.sort(function(a, b) { return b.lastUpdated - a.lastUpdated; });
+    const combined = directMessages.concat(spaceMessages).sort(function(a, b) { return b.lastUpdated - a.lastUpdated; });
+
     return {
       success: true,
-      totalUnread: unreadChatThreads.length,
+      totalUnread: directMessages.length + spaceMessages.length,
+      unreadCount: directMessages.length + spaceMessages.length,
       directCount: directMessages.length,
       spaceCount: spaceMessages.length,
       directMessages: directMessages,
       spaces: spaceMessages,
-      latestConversation: combined[0] || null
+      latestConversation: combined[0] || null,
+      dataSource: response.source
     };
 
   } catch (error) {
@@ -202,6 +389,7 @@ function getChatData() {
     return {
       success: false,
       totalUnread: directMessages.length + spaceMessages.length,
+      unreadCount: directMessages.length + spaceMessages.length,
       directCount: directMessages.length,
       spaceCount: spaceMessages.length,
       directMessages: [],
