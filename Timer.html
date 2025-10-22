@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusHub タイマー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --md-primary: #6750A4;
+      --md-on-primary: #FFFFFF;
+      --md-surface: #FEF7FF;
+      --md-surface-container: #F3EDF7;
+      --md-surface-container-high: #ECE6F0;
+      --md-outline: #CAC4D0;
+      --md-on-surface: #1D1B20;
+      --md-on-surface-variant: #49454F;
+      --md-shadow: rgba(29, 27, 32, 0.14);
+      --md-success: #2E7D32;
+      --md-error: #B3261E;
+    }
+
+    body[data-theme="dark"] {
+      color-scheme: dark;
+      --md-primary: #D0BCFF;
+      --md-on-primary: #381E72;
+      --md-surface: #141218;
+      --md-surface-container: #211F26;
+      --md-surface-container-high: #2B2930;
+      --md-outline: #49454F;
+      --md-on-surface: #E6E0E9;
+      --md-on-surface-variant: #CAC4D0;
+      --md-shadow: rgba(0, 0, 0, 0.4);
+      --md-success: #81C995;
+      --md-error: #F2B8B5;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      margin: 0;
+      padding: 24px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .timer-surface {
+      background: var(--md-surface-container);
+      border: 1px solid var(--md-outline);
+      border-radius: 28px;
+      padding: 24px;
+      width: min(420px, 100%);
+      box-shadow: 0 18px 40px var(--md-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .timer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .timer-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .time-display {
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-align: center;
+    }
+
+    .time-display.small {
+      font-size: 32px;
+    }
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--md-on-surface-variant);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    input[type="number"] {
+      appearance: textfield;
+      border-radius: 16px;
+      border: 1px solid var(--md-outline);
+      padding: 10px;
+      font-size: 16px;
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      text-align: center;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"]:focus {
+      outline: none;
+      border-color: var(--md-primary);
+      box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.2);
+    }
+
+    .quick-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 10px;
+    }
+
+    .chip-btn {
+      border: 1px solid var(--md-outline);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: transparent;
+      color: var(--md-on-surface);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+
+    .chip-btn:hover {
+      background: rgba(103, 80, 164, 0.1);
+      border-color: var(--md-primary);
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .md-button {
+      border: none;
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .md-button.primary {
+      background: var(--md-primary);
+      color: var(--md-on-primary);
+      box-shadow: 0 8px 24px rgba(103, 80, 164, 0.25);
+    }
+
+    .md-button.secondary {
+      background: var(--md-surface);
+      color: var(--md-on-surface);
+      border: 1px solid var(--md-outline);
+    }
+
+    .md-button.destructive {
+      background: var(--md-error);
+      color: var(--md-on-primary);
+    }
+
+    .md-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .md-button:not(:disabled):hover {
+      transform: translateY(-1px);
+    }
+
+    .status-text {
+      text-align: center;
+      font-size: 13px;
+      color: var(--md-on-surface-variant);
+      min-height: 18px;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(103, 80, 164, 0.15);
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: var(--md-primary);
+      border-radius: 999px;
+      transition: width 0.2s linear;
+    }
+
+    @media (max-width: 420px) {
+      .timer-surface {
+        border-radius: 20px;
+        padding: 20px;
+      }
+
+      .time-display {
+        font-size: 40px;
+      }
+
+      .inputs-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <main class="timer-surface">
+    <div class="timer-header">
+      <h1><span class="material-icons">timer</span>カスタムタイマー</h1>
+      <button class="chip-btn" id="notifyToggle" type="button">通知を有効化</button>
+    </div>
+
+    <div class="time-display" id="timeDisplay">00:00:00</div>
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+    <form id="timerForm">
+      <div class="inputs-grid">
+        <label>時間
+          <input type="number" id="hoursInput" min="0" max="23" value="0">
+        </label>
+        <label>分
+          <input type="number" id="minutesInput" min="0" max="59" value="5">
+        </label>
+        <label>秒
+          <input type="number" id="secondsInput" min="0" max="59" value="0">
+        </label>
+      </div>
+    </form>
+
+    <div class="quick-buttons">
+      <button class="chip-btn" data-minutes="1" type="button">1分</button>
+      <button class="chip-btn" data-minutes="5" type="button">5分</button>
+      <button class="chip-btn" data-minutes="10" type="button">10分</button>
+      <button class="chip-btn" data-minutes="15" type="button">15分</button>
+      <button class="chip-btn" data-minutes="30" type="button">30分</button>
+      <button class="chip-btn" data-minutes="45" type="button">45分</button>
+    </div>
+
+    <div class="controls">
+      <button class="md-button primary" id="startBtn" type="button">
+        <span class="material-icons">play_arrow</span>開始
+      </button>
+      <button class="md-button secondary" id="pauseBtn" type="button" disabled>
+        <span class="material-icons">pause</span>一時停止
+      </button>
+      <button class="md-button secondary" id="resumeBtn" type="button" disabled>
+        <span class="material-icons">play_circle</span>再開
+      </button>
+      <button class="md-button destructive" id="resetBtn" type="button" disabled>
+        <span class="material-icons">restart_alt</span>リセット
+      </button>
+    </div>
+
+    <div class="status-text" id="statusText">タイマーの長さを設定してください。</div>
+  </main>
+
+  <script>
+    const hoursInput = document.getElementById('hoursInput');
+    const minutesInput = document.getElementById('minutesInput');
+    const secondsInput = document.getElementById('secondsInput');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resumeBtn = document.getElementById('resumeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusText = document.getElementById('statusText');
+    const timeDisplay = document.getElementById('timeDisplay');
+    const progressBar = document.getElementById('progressBar');
+    const notifyToggle = document.getElementById('notifyToggle');
+
+    const THEME_STORAGE_KEY = 'nexushub-theme';
+    const themePreferenceQuery = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+    function applyPreferredTheme(theme) {
+      const normalized = theme === 'dark' ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', normalized);
+    }
+
+    function resolveTimerTheme() {
+      try {
+        const stored = localStorage.getItem(THEME_STORAGE_KEY);
+        if (stored === 'dark' || stored === 'light') {
+          return stored;
+        }
+      } catch (error) {
+        console.warn('テーマ設定の読み込みに失敗しました:', error);
+      }
+      if (themePreferenceQuery && typeof themePreferenceQuery.matches === 'boolean') {
+        return themePreferenceQuery.matches ? 'dark' : 'light';
+      }
+      return 'light';
+    }
+
+    function syncThemeFromPreference() {
+      applyPreferredTheme(resolveTimerTheme());
+    }
+
+    syncThemeFromPreference();
+
+    window.addEventListener('focus', syncThemeFromPreference);
+    window.addEventListener('storage', function(event) {
+      if (event.key === THEME_STORAGE_KEY) {
+        syncThemeFromPreference();
+      }
+    });
+
+    if (themePreferenceQuery) {
+      const handleThemeChange = function() {
+        const stored = (() => {
+          try {
+            return localStorage.getItem(THEME_STORAGE_KEY);
+          } catch (err) {
+            return null;
+          }
+        })();
+        if (!stored) {
+          syncThemeFromPreference();
+        }
+      };
+
+      if (typeof themePreferenceQuery.addEventListener === 'function') {
+        themePreferenceQuery.addEventListener('change', handleThemeChange);
+      } else if (typeof themePreferenceQuery.addListener === 'function') {
+        themePreferenceQuery.addListener(handleThemeChange);
+      }
+    }
+
+    let countdownInterval = null;
+    let remainingMs = 0;
+    let totalMs = 0;
+    let isRunning = false;
+    const alarmAudio = new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg');
+    alarmAudio.preload = 'auto';
+
+    function pad(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function updateDisplay(ms) {
+      const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const formatted = pad(hours) + ':' + pad(minutes) + ':' + pad(seconds);
+      timeDisplay.textContent = formatted;
+      timeDisplay.classList.toggle('small', hours > 0);
+
+      if (totalMs > 0) {
+        const progress = 100 - Math.floor((ms / totalMs) * 100);
+        progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+      } else {
+        progressBar.style.width = '0%';
+      }
+    }
+
+    function parseInputs() {
+      const hours = Number(hoursInput.value) || 0;
+      const minutes = Number(minutesInput.value) || 0;
+      const seconds = Number(secondsInput.value) || 0;
+      return ((hours * 3600) + (minutes * 60) + seconds) * 1000;
+    }
+
+    function setStatus(message, tone = 'neutral') {
+      statusText.textContent = message;
+      if (tone === 'error') {
+        statusText.style.color = 'var(--md-error)';
+      } else if (tone === 'success') {
+        statusText.style.color = 'var(--md-success)';
+      } else {
+        statusText.style.color = 'var(--md-on-surface-variant)';
+      }
+    }
+
+    function startTimer() {
+      if (isRunning) {
+        return;
+      }
+
+      const duration = parseInputs();
+      if (!duration || duration <= 0) {
+        setStatus('1秒以上の時間を設定してください。', 'error');
+        return;
+      }
+
+      totalMs = duration;
+      remainingMs = duration;
+      updateDisplay(remainingMs);
+      runTimer();
+      setStatus('タイマーを開始しました。', 'success');
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resetBtn.disabled = false;
+      resumeBtn.disabled = true;
+    }
+
+    function runTimer() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+      }
+
+      isRunning = true;
+      countdownInterval = setInterval(() => {
+        remainingMs -= 1000;
+        updateDisplay(remainingMs);
+
+        if (remainingMs <= 0) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+          isRunning = false;
+          progressBar.style.width = '100%';
+          handleTimerComplete();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) {
+        return;
+      }
+
+      isRunning = false;
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+      setStatus('一時停止中です。');
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = remainingMs <= 0;
+      startBtn.disabled = true;
+    }
+
+    function resumeTimer() {
+      if (isRunning || remainingMs <= 0) {
+        return;
+      }
+
+      runTimer();
+      setStatus('タイマーを再開しました。', 'success');
+      pauseBtn.disabled = false;
+      resumeBtn.disabled = true;
+    }
+
+    function resetTimer() {
+      if (countdownInterval) {
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+      }
+      isRunning = false;
+      remainingMs = 0;
+      totalMs = parseInputs();
+      updateDisplay(totalMs || 0);
+      setStatus('タイマーをリセットしました。');
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = true;
+      resetBtn.disabled = true;
+      progressBar.style.width = '0%';
+    }
+
+    function handleTimerComplete() {
+      setStatus('時間になりました！', 'success');
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resumeBtn.disabled = true;
+      resetBtn.disabled = false;
+
+      alarmAudio.currentTime = 0;
+      alarmAudio.play().catch(() => {});
+
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('タイマー', {
+          body: '設定した時間が経過しました。',
+          icon: 'https://www.gstatic.com/images/branding/product/2x/googleg_48dp.png'
+        });
+      } else {
+        alert('時間になりました！');
+      }
+    }
+
+    function handleQuickButton(event) {
+      const minutes = Number(event.currentTarget.getAttribute('data-minutes')) || 0;
+      hoursInput.value = Math.floor(minutes / 60);
+      minutesInput.value = minutes % 60;
+      secondsInput.value = 0;
+      resetTimer();
+      setStatus(minutes + '分のタイマーをセットしました。');
+    }
+
+    function requestNotificationPermission() {
+      if (!('Notification' in window)) {
+        setStatus('ブラウザが通知に対応していません。', 'error');
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        setStatus('通知は既に有効です。', 'success');
+        notifyToggle.textContent = '通知が有効です';
+        notifyToggle.disabled = true;
+        return;
+      }
+
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          setStatus('通知を有効化しました。', 'success');
+          notifyToggle.textContent = '通知が有効です';
+          notifyToggle.disabled = true;
+        } else {
+          setStatus('通知が許可されませんでした。', 'error');
+        }
+      });
+    }
+
+    document.querySelectorAll('.chip-btn[data-minutes]').forEach(button => {
+      button.addEventListener('click', handleQuickButton);
+    });
+
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resumeBtn.addEventListener('click', resumeTimer);
+    resetBtn.addEventListener('click', resetTimer);
+    notifyToggle.addEventListener('click', requestNotificationPermission);
+
+    hoursInput.addEventListener('change', () => {
+      hoursInput.value = Math.min(Math.max(Number(hoursInput.value) || 0, 0), 23);
+      if (!isRunning) {
+        updateDisplay(parseInputs());
+      }
+    });
+
+    minutesInput.addEventListener('change', () => {
+      minutesInput.value = Math.min(Math.max(Number(minutesInput.value) || 0, 0), 59);
+      if (!isRunning) {
+        updateDisplay(parseInputs());
+      }
+    });
+
+    secondsInput.addEventListener('change', () => {
+      secondsInput.value = Math.min(Math.max(Number(secondsInput.value) || 0, 0), 59);
+      if (!isRunning) {
+        updateDisplay(parseInputs());
+      }
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && !isRunning && remainingMs > 0 && remainingMs < totalMs) {
+        setStatus('再開するには再開ボタンを押してください。');
+      }
+    });
+
+    updateDisplay(parseInputs());
+
+    if ('Notification' in window && Notification.permission === 'granted') {
+      notifyToggle.textContent = '通知が有効です';
+      notifyToggle.disabled = true;
+    }
+  </script>
+</body>
+</html>
